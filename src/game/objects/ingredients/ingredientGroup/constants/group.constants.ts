@@ -3,5 +3,5 @@ export const GROUP_LAYOT = {
   itemSize: 200,
   columnStep: 300,
   rowStep: 260,
-  centerFromBottonRation: 0.45,
+  centerFromTopRation: 0.45,
 };

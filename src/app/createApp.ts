@@ -30,7 +30,7 @@ export async function createApp(root: HTMLElement) {
 
   if (import.meta.env.DEV) {
     const targets = scene.children.filter(
-      (child) => child.label === "cauldron" || child.label === "ingredients",
+      (child) => child.label !== "debug_hide",
     );
 
     destroyDebug = createDebugOverlay(app, targets);

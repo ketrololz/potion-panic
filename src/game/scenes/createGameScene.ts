@@ -4,6 +4,9 @@ import { createCauldron } from "../objects/cauldron/createCauldron";
 import { CAULDRON_LAYOUT } from "../objects/cauldron/constants/cauldron.constants";
 import { createIngredientGroup } from "../objects/ingredients/ingredientGroup/createIngredientGroup";
 import { GROUP_LAYOT } from "../objects/ingredients/ingredientGroup/constants/group.constants";
+import { createRecipeProgress } from "../gameplay/recipe/createRecipeProgress";
+import { createRecipePanel } from "../../ui/recipe/createRecipePanel";
+import { RECIPE_LAYOUT } from "../../ui/recipe/constants/layout.constants";
 
 export async function createGameScene(): Promise<Container> {
   const scene = new Container();
@@ -13,6 +16,8 @@ export async function createGameScene(): Promise<Container> {
   const texture = await Assets.load("/assets/backgrounds/lab.webp");
 
   const background = new Sprite(texture);
+
+  background.label = "debug_hide";
 
   background.anchor.set(0.5);
   background.position.set(GAME_WIDTH / 2, GAME_HEIGHT / 2);
@@ -38,8 +43,6 @@ export async function createGameScene(): Promise<Container> {
 
   const cauldron = await createCauldron();
 
-  cauldron.label = "cauldron";
-
   const cauldronWidth = GAME_WIDTH * CAULDRON_LAYOUT.cauldron.widthRatio;
   cauldron.scale.set(cauldronWidth / cauldron.width);
   cauldron.position.set(
@@ -51,18 +54,34 @@ export async function createGameScene(): Promise<Container> {
 
   //ingredients
 
-  const ingredients = await createIngredientGroup((id) => {
-    console.log("Тыкнут:", id);
-  });
+  const recipe = ["flower", "pomegranate", "blueberry"];
 
-  ingredients.label = "ingredients";
+  const recipeProgress = createRecipeProgress(recipe);
+  const recipePanel = await createRecipePanel(recipe);
+
+  const ingredients = await createIngredientGroup((id) => {
+    const result = recipeProgress.selectIngredient(id);
+
+    if (result === "wrong" || result === "completed") recipeProgress.reset();
+
+    recipePanel.setProgress(recipeProgress.getProgress().currentStep);
+  });
 
   ingredients.position.set(
     GAME_WIDTH / 2,
-    GAME_HEIGHT * GROUP_LAYOT.centerFromBottonRation,
+    GAME_HEIGHT * GROUP_LAYOT.centerFromTopRation,
   );
 
   scene.addChild(ingredients);
+
+  //recipe
+
+  recipePanel.view.position.set(
+    GAME_WIDTH / 2,
+    GAME_HEIGHT * RECIPE_LAYOUT.centerFromTopRation,
+  );
+
+  scene.addChild(recipePanel.view);
 
   return scene;
 }
