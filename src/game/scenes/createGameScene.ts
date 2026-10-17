@@ -38,6 +38,8 @@ export async function createGameScene(): Promise<Container> {
 
   const cauldron = await createCauldron();
 
+  cauldron.label = "cauldron";
+
   const cauldronWidth = GAME_WIDTH * CAULDRON_LAYOUT.cauldron.widthRatio;
   cauldron.scale.set(cauldronWidth / cauldron.width);
   cauldron.position.set(
@@ -52,6 +54,8 @@ export async function createGameScene(): Promise<Container> {
   const ingredients = await createIngredientGroup((id) => {
     console.log("Тыкнут:", id);
   });
+
+  ingredients.label = "ingredients";
 
   ingredients.position.set(
     GAME_WIDTH / 2,
