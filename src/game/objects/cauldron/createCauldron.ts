@@ -1,5 +1,5 @@
 import { Assets, Container, Sprite } from "pixi.js";
-import { cauldronLayout } from "./constants/cauldron.constants";
+import { CAULDRON_LAYOUT } from "./constants/cauldron.constants";
 
 export async function createCauldron(): Promise<Container> {
   const cauldron = new Container();
@@ -16,11 +16,11 @@ export async function createCauldron(): Promise<Container> {
 
   liquid.anchor.set(0.5);
 
-  liquid.width = body.width * cauldronLayout.liquid.widthRatio;
-  liquid.height = body.height * cauldronLayout.liquid.heightRatio;
+  liquid.width = body.width * CAULDRON_LAYOUT.liquid.widthRatio;
+  liquid.height = body.height * CAULDRON_LAYOUT.liquid.heightRatio;
   liquid.position.set(
     0,
-    -body.height * cauldronLayout.liquid.centerFromBottomRatio,
+    -body.height * CAULDRON_LAYOUT.liquid.centerFromBottomRatio,
   );
 
   cauldron.addChild(body, liquid);

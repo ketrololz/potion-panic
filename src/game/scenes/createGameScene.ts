@@ -1,8 +1,9 @@
 import { Assets, Container, Graphics, Sprite } from "pixi.js";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants/config/config.constants";
 import { createCauldron } from "../objects/cauldron/createCauldron";
-import { cauldronLayout } from "../objects/cauldron/constants/cauldron.constants";
-import { createIngredient } from "../objects/ingredient/createIngredient";
+import { CAULDRON_LAYOUT } from "../objects/cauldron/constants/cauldron.constants";
+import { createIngredientGroup } from "../objects/ingredients/ingredientGroup/createIngredientGroup";
+import { GROUP_LAYOT } from "../objects/ingredients/ingredientGroup/constants/group.constants";
 
 export async function createGameScene(): Promise<Container> {
   const scene = new Container();
@@ -37,29 +38,27 @@ export async function createGameScene(): Promise<Container> {
 
   const cauldron = await createCauldron();
 
-  const cauldronWidth = GAME_WIDTH * cauldronLayout.cauldron.widthRatio;
+  const cauldronWidth = GAME_WIDTH * CAULDRON_LAYOUT.cauldron.widthRatio;
   cauldron.scale.set(cauldronWidth / cauldron.width);
   cauldron.position.set(
     GAME_WIDTH / 2,
-    GAME_HEIGHT - GAME_HEIGHT * cauldronLayout.cauldron.centerFromBottomRatio,
+    GAME_HEIGHT - GAME_HEIGHT * CAULDRON_LAYOUT.cauldron.centerFromBottomRatio,
   );
 
   scene.addChild(cauldron);
 
-  //flower
+  //ingredients
 
-  const flower = await createIngredient({
-    id: "flower",
-    textureUrl: "/assets/ingredients/flower.webp",
-    size: 200,
-    onSelect: (id) => {
-      console.log("Тыкнут:", id);
-    },
+  const ingredients = await createIngredientGroup((id) => {
+    console.log("Тыкнут:", id);
   });
 
-  flower.position.set(540, 760);
+  ingredients.position.set(
+    GAME_WIDTH / 2,
+    GAME_HEIGHT * GROUP_LAYOT.centerFromBottonRation,
+  );
 
-  scene.addChild(flower);
+  scene.addChild(ingredients);
 
   return scene;
 }

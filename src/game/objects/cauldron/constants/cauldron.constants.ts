@@ -1,4 +1,4 @@
-export const cauldronLayout = {
+export const CAULDRON_LAYOUT = {
   cauldron: {
     widthRatio: 0.75,
     centerFromBottomRatio: 0.08,

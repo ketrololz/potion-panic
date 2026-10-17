@@ -14,7 +14,8 @@ export async function createIngredient(
 
   ingredient.scale.set(scale);
 
-  ((ingredient.eventMode = "static"), (ingredient.cursor = "pointer"));
+  ingredient.eventMode = "static";
+  ingredient.cursor = "pointer";
 
   ingredient.on("pointertap", () => {
     options.onSelect(options.id);
