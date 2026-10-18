@@ -12,4 +12,7 @@ export const GAME_LAYOUT = {
   score: {
     centerY: 150,
   },
+  combo: {
+    bottomOffset: 130,
+  },
 } as const;

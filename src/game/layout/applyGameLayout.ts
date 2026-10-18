@@ -8,6 +8,7 @@ export function applyGameLayout({
   ingredients,
   recipePanel,
   scorePanel,
+  comboPanel,
 }: GameLayoutTargets): void {
   const centerX = GAME_WIDTH / 2;
 
@@ -39,6 +40,11 @@ export function applyGameLayout({
   recipePanel.position.set(
     centerX,
     GAME_HEIGHT * GAME_LAYOUT.recipe.centerYRatio,
+  );
+
+  comboPanel.position.set(
+    centerX,
+    GAME_HEIGHT - GAME_LAYOUT.combo.bottomOffset,
   );
 
   scorePanel.position.set(centerX, GAME_LAYOUT.score.centerY);
