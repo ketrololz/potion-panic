@@ -1,4 +1,4 @@
-import { Assets, Container, Graphics, Sprite } from "pixi.js";
+import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 import { RECIPE_LAYOUT } from "./constants/layout.constants";
 import { INGREDIENTS } from "../../game/objects/ingredients/constants/ingredinents.constants";
 
@@ -15,6 +15,32 @@ export async function createRecipePanel(recipe: readonly string[]) {
   panel.scale.set(RECIPE_LAYOUT.panelWidth / panelTexture.width);
 
   view.addChild(panel);
+
+  const textPanelTexture = await Assets.load(
+    "/assets/ui/recipe/text-panel.webp",
+  );
+
+  const textPanel = new Sprite(textPanelTexture);
+
+  textPanel.anchor.set(0.5);
+  textPanel.scale.set(RECIPE_LAYOUT.textPanel.width / textPanelTexture.width);
+  textPanel.position.set(0, RECIPE_LAYOUT.textPanel.y);
+
+  view.addChild(textPanel);
+
+  const title = new Text({
+    text: RECIPE_LAYOUT.title.text,
+    style: {
+      fontFamily: RECIPE_LAYOUT.fontFamily,
+      fontSize: RECIPE_LAYOUT.title.fontSize,
+      fill: RECIPE_LAYOUT.textColor,
+    },
+  });
+
+  title.anchor.set(0.5);
+  title.position.set(0, RECIPE_LAYOUT.title.y);
+
+  view.addChild(title);
 
   const items = await Promise.all(
     recipe.map(async (id) => {
@@ -39,17 +65,33 @@ export async function createRecipePanel(recipe: readonly string[]) {
           width: RECIPE_LAYOUT.highlightWidth,
         });
 
-      return { icon, highlight };
+      const arrow = new Text({
+        text: RECIPE_LAYOUT.arrow.text,
+        style: {
+          fontFamily: RECIPE_LAYOUT.fontFamily,
+          fontSize: RECIPE_LAYOUT.arrow.fontSize,
+          fill: RECIPE_LAYOUT.textColor,
+        },
+      });
+
+      arrow.anchor.set(0.5);
+
+      return { icon, highlight, arrow };
     }),
   );
 
   const rowWidth = (items.length - 1) * RECIPE_LAYOUT.iconStep;
 
-  items.forEach(({ icon, highlight }, index) => {
+  items.forEach(({ icon, highlight, arrow }, index) => {
     const x = index * RECIPE_LAYOUT.iconStep - rowWidth / 2;
 
     icon.position.set(x, RECIPE_LAYOUT.rowY);
     highlight.position.set(x, RECIPE_LAYOUT.rowY);
+
+    if (index < items.length - 1) {
+      arrow.position.set(x + RECIPE_LAYOUT.iconStep / 2, RECIPE_LAYOUT.rowY);
+      view.addChild(arrow);
+    }
 
     view.addChild(highlight, icon);
   });

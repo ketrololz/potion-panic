@@ -4,9 +4,9 @@ import { createCauldron } from "../objects/cauldron/createCauldron";
 import { CAULDRON_LAYOUT } from "../objects/cauldron/constants/cauldron.constants";
 import { createIngredientGroup } from "../objects/ingredients/ingredientGroup/createIngredientGroup";
 import { GROUP_LAYOT } from "../objects/ingredients/ingredientGroup/constants/group.constants";
-import { createRecipeProgress } from "../gameplay/recipe/createRecipeProgress";
 import { createRecipePanel } from "../../ui/recipe/createRecipePanel";
 import { RECIPE_LAYOUT } from "../../ui/recipe/constants/layout.constants";
+import { createGameSession } from "../gameplay/session/createGameSession";
 
 export async function createGameScene(): Promise<Container> {
   const scene = new Container();
@@ -56,15 +56,15 @@ export async function createGameScene(): Promise<Container> {
 
   const recipe = ["flower", "pomegranate", "blueberry"];
 
-  const recipeProgress = createRecipeProgress(recipe);
+  const session = createGameSession(recipe);
   const recipePanel = await createRecipePanel(recipe);
 
+  recipePanel.setProgress(session.getState().currentStep);
+
   const ingredients = await createIngredientGroup((id) => {
-    const result = recipeProgress.selectIngredient(id);
+    const { state } = session.selectIngredient(id);
 
-    if (result === "wrong" || result === "completed") recipeProgress.reset();
-
-    recipePanel.setProgress(recipeProgress.getProgress().currentStep);
+    recipePanel.setProgress(state.currentStep);
   });
 
   ingredients.position.set(
