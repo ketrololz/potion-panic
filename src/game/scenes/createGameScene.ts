@@ -7,6 +7,7 @@ import { GROUP_LAYOT } from "../objects/ingredients/ingredientGroup/constants/gr
 import { createRecipePanel } from "../../ui/recipe/createRecipePanel";
 import { RECIPE_LAYOUT } from "../../ui/recipe/constants/layout.constants";
 import { createGameSession } from "../gameplay/session/createGameSession";
+import { createScorePanel } from "../../ui/score/createScorePanel";
 
 export async function createGameScene(): Promise<Container> {
   const scene = new Container();
@@ -65,6 +66,7 @@ export async function createGameScene(): Promise<Container> {
     const { state } = session.selectIngredient(id);
 
     recipePanel.setProgress(state.currentStep);
+    scorePanel.setScore(state.score);
   });
 
   ingredients.position.set(
@@ -73,6 +75,14 @@ export async function createGameScene(): Promise<Container> {
   );
 
   scene.addChild(ingredients);
+
+  //score
+
+  const scorePanel = createScorePanel(session.getState().score);
+
+  scorePanel.view.position.set(GAME_WIDTH / 2, 150);
+
+  scene.addChild(scorePanel.view);
 
   //recipe
 
