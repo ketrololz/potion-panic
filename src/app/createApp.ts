@@ -1,4 +1,4 @@
-import { Application } from "pixi.js";
+import { Application, Ticker } from "pixi.js";
 import { createGameScene } from "../game/scenes/createGameScene";
 import { fitScene } from "../game/layout/fitScene";
 import { createDebugOverlay } from "../game/debug/createDebugOverlay";
@@ -18,18 +18,24 @@ export async function createApp(root: HTMLElement) {
 
   const scene = await createGameScene();
 
-  app.stage.addChild(scene);
+  app.stage.addChild(scene.view);
 
   function resize() {
-    fitScene(scene, app.screen.width, app.screen.height);
+    fitScene(scene.view, app.screen.width, app.screen.height);
   }
 
   resize();
 
+  function update(ticker: Ticker) {
+    scene.update(ticker.deltaMS);
+  }
+
+  app.ticker.add(update);
+
   let destroyDebug: (() => void) | undefined;
 
   if (import.meta.env.DEV) {
-    const targets = scene.children.filter(
+    const targets = scene.view.children.filter(
       (child) => child.label !== "debug_hide",
     );
 
@@ -43,6 +49,7 @@ export async function createApp(root: HTMLElement) {
       destroyDebug?.();
 
       app.renderer.off("resize", resize);
+      app.ticker.remove(update);
       app.destroy(true, { children: true });
     },
   };

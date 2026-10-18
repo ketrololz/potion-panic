@@ -7,4 +7,5 @@ export interface GameLayoutTargets {
   recipePanel: Container;
   scorePanel: Container;
   comboPanel: Container;
+  timerPanel: Container;
 }

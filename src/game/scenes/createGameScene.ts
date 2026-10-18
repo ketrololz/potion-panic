@@ -8,8 +8,10 @@ import { createScorePanel } from "../../ui/score/createScorePanel";
 import { applyGameLayout } from "../layout/applyGameLayout";
 import { createComboPanel } from "../../ui/combo/createComboPanel";
 import { SESSION_RULES } from "../gameplay/session/constants/session.constants";
+import { createTimerPanel } from "../../ui/timer/createTimerPanel";
+import type { GameScene } from "./types/gameScene.types";
 
-export async function createGameScene(): Promise<Container> {
+export async function createGameScene(): Promise<GameScene> {
   const scene = new Container();
 
   const texture = await Assets.load("/assets/backgrounds/lab.webp");
@@ -56,6 +58,9 @@ export async function createGameScene(): Promise<Container> {
   );
   scene.addChild(comboPanel.view);
 
+  const timerPanel = createTimerPanel(session.getState().remainingMs);
+  scene.addChild(timerPanel.view);
+
   applyGameLayout({
     background,
     cauldron,
@@ -63,7 +68,17 @@ export async function createGameScene(): Promise<Container> {
     recipePanel: recipePanel.view,
     scorePanel: scorePanel.view,
     comboPanel: comboPanel.view,
+    timerPanel: timerPanel.view,
   });
 
-  return scene;
+  function update(deltaMs: number) {
+    session.update(deltaMs);
+
+    timerPanel.setTime(session.getState().remainingMs);
+  }
+
+  return {
+    view: scene,
+    update,
+  };
 }

@@ -11,8 +11,13 @@ export const GAME_LAYOUT = {
   },
   score: {
     centerY: 150,
+    centerXRatio: 0.25,
   },
   combo: {
     bottomOffset: 130,
+  },
+  timer: {
+    centerXRatio: 0.75,
+    centerY: 150,
   },
 } as const;
