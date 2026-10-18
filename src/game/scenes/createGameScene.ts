@@ -7,6 +7,7 @@ import { createGameSession } from "../gameplay/session/createGameSession";
 import { createScorePanel } from "../../ui/score/createScorePanel";
 import { applyGameLayout } from "../layout/applyGameLayout";
 import { createComboPanel } from "../../ui/combo/createComboPanel";
+import { SESSION_RULES } from "../gameplay/session/constants/session.constants";
 
 export async function createGameScene(): Promise<Container> {
   const scene = new Container();
@@ -49,7 +50,10 @@ export async function createGameScene(): Promise<Container> {
   scorePanel.view.position.set(GAME_WIDTH / 2, 150);
   scene.addChild(scorePanel.view);
 
-  const comboPanel = createComboPanel(session.getState().combo);
+  const comboPanel = await createComboPanel(
+    session.getState().combo,
+    SESSION_RULES.maxCombo,
+  );
   scene.addChild(comboPanel.view);
 
   applyGameLayout({
