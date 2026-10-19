@@ -11,6 +11,7 @@ import { SESSION_RULES } from "../gameplay/session/constants/session.constants";
 import { createTimerPanel } from "../../ui/timer/createTimerPanel";
 import type { GameScene } from "./types/gameScene.types";
 import { createPauseButton } from "../../ui/pause/createPauseButton";
+import { createResultPanel } from "../../ui/result/createResultPanel";
 
 export async function createGameScene(): Promise<GameScene> {
   const scene = new Container();
@@ -40,11 +41,9 @@ export async function createGameScene(): Promise<GameScene> {
   recipePanel.setProgress(session.getState().currentStep);
 
   const ingredients = await createIngredientGroup((id) => {
-    const { state } = session.selectIngredient(id);
+    session.selectIngredient(id);
 
-    recipePanel.setProgress(state.currentStep);
-    scorePanel.setScore(state.score);
-    comboPanel.setCombo(state.combo);
+    syncPanels();
   });
   scene.addChild(ingredients);
 
@@ -76,6 +75,18 @@ export async function createGameScene(): Promise<GameScene> {
 
   scene.addChild(pauseButton.view);
 
+  const resultPanel = createResultPanel({
+    screenHeight: GAME_HEIGHT,
+    screenWidth: GAME_WIDTH,
+    onRestart: () => {
+      session.restart();
+      syncPanels();
+      resultPanel.hide();
+    },
+  });
+
+  scene.addChild(resultPanel.view);
+
   applyGameLayout({
     background,
     cauldron,
@@ -85,6 +96,7 @@ export async function createGameScene(): Promise<GameScene> {
     comboPanel: comboPanel.view,
     timerPanel: timerPanel.view,
     pauseButton: pauseButton.view,
+    resultPanel: resultPanel.view,
   });
 
   function update(deltaMs: number) {
@@ -98,6 +110,18 @@ export async function createGameScene(): Promise<GameScene> {
     ingredients.eventMode = isPlaying ? "passive" : "none";
 
     pauseButton.setEnabled(state.status !== "finished");
+
+    if (state.status === "finished") resultPanel.show(state.score);
+  }
+
+  function syncPanels() {
+    const state = session.getState();
+
+    recipePanel.setProgress(state.currentStep);
+    scorePanel.setScore(state.score);
+    comboPanel.setCombo(state.combo);
+    timerPanel.setTime(state.remainingMs);
+    pauseButton.setPaused(state.status === "paused");
   }
 
   return {

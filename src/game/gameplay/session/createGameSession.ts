@@ -65,11 +65,21 @@ export function createGameSession(recipe: readonly string[]) {
     if (status === "paused") status = "playing";
   }
 
+  function restart() {
+    recipeProgress.reset();
+
+    score = 0;
+    combo = 0;
+    remainingMs = SESSION_RULES.durationMs;
+    status = "playing";
+  }
+
   return {
     selectIngredient,
     getState,
     update,
     pause,
     resume,
+    restart,
   };
 }
