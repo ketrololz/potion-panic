@@ -10,6 +10,7 @@ import { createComboPanel } from "../../ui/combo/createComboPanel";
 import { SESSION_RULES } from "../gameplay/session/constants/session.constants";
 import { createTimerPanel } from "../../ui/timer/createTimerPanel";
 import type { GameScene } from "./types/gameScene.types";
+import { createPauseButton } from "../../ui/pause/createPauseButton";
 
 export async function createGameScene(): Promise<GameScene> {
   const scene = new Container();
@@ -61,6 +62,20 @@ export async function createGameScene(): Promise<GameScene> {
   const timerPanel = createTimerPanel(session.getState().remainingMs);
   scene.addChild(timerPanel.view);
 
+  const pauseButton = createPauseButton(() => {
+    const { status } = session.getState();
+
+    if (status === "playing") {
+      session.pause();
+    } else if (status === "paused") {
+      session.resume();
+    }
+
+    pauseButton.setPaused(session.getState().status === "paused");
+  });
+
+  scene.addChild(pauseButton.view);
+
   applyGameLayout({
     background,
     cauldron,
@@ -69,12 +84,20 @@ export async function createGameScene(): Promise<GameScene> {
     scorePanel: scorePanel.view,
     comboPanel: comboPanel.view,
     timerPanel: timerPanel.view,
+    pauseButton: pauseButton.view,
   });
 
   function update(deltaMs: number) {
     session.update(deltaMs);
 
+    const state = session.getState();
+    const isPlaying = state.status === "playing";
+
     timerPanel.setTime(session.getState().remainingMs);
+
+    ingredients.eventMode = isPlaying ? "passive" : "none";
+
+    pauseButton.setEnabled(state.status !== "finished");
   }
 
   return {

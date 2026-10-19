@@ -8,4 +8,5 @@ export interface GameLayoutTargets {
   scorePanel: Container;
   comboPanel: Container;
   timerPanel: Container;
+  pauseButton: Container;
 }

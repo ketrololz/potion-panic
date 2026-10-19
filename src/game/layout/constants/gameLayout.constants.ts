@@ -20,4 +20,8 @@ export const GAME_LAYOUT = {
     centerXRatio: 0.75,
     centerY: 150,
   },
+  pause: {
+    centerXRatio: 0.5,
+    centerY: 150,
+  },
 } as const;
