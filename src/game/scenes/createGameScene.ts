@@ -12,6 +12,7 @@ import { createTimerPanel } from "../../ui/timer/createTimerPanel";
 import type { GameScene } from "./types/gameScene.types";
 import { createPauseButton } from "../../ui/pause/createPauseButton";
 import { createResultPanel } from "../../ui/result/createResultPanel";
+import { INGREDIENTS_NAME } from "../objects/ingredients/constants/ingredinents.constants";
 
 export async function createGameScene(): Promise<GameScene> {
   const scene = new Container();
@@ -31,11 +32,9 @@ export async function createGameScene(): Promise<GameScene> {
   const cauldron = await createCauldron();
   scene.addChild(cauldron);
 
-  const recipe = ["flower", "pomegranate", "blueberry"];
+  const session = createGameSession(INGREDIENTS_NAME);
 
-  const session = createGameSession(recipe);
-
-  const recipePanel = await createRecipePanel(recipe);
+  const recipePanel = await createRecipePanel(session.getState().recipe);
   scene.addChild(recipePanel.view);
 
   recipePanel.setProgress(session.getState().currentStep);
@@ -48,8 +47,6 @@ export async function createGameScene(): Promise<GameScene> {
   scene.addChild(ingredients);
 
   const scorePanel = createScorePanel(session.getState().score);
-
-  scorePanel.view.position.set(GAME_WIDTH / 2, 150);
   scene.addChild(scorePanel.view);
 
   const comboPanel = await createComboPanel(
@@ -105,7 +102,7 @@ export async function createGameScene(): Promise<GameScene> {
     const state = session.getState();
     const isPlaying = state.status === "playing";
 
-    timerPanel.setTime(session.getState().remainingMs);
+    timerPanel.setTime(state.remainingMs);
 
     ingredients.eventMode = isPlaying ? "passive" : "none";
 
@@ -117,6 +114,7 @@ export async function createGameScene(): Promise<GameScene> {
   function syncPanels() {
     const state = session.getState();
 
+    recipePanel.setRecipe(state.recipe);
     recipePanel.setProgress(state.currentStep);
     scorePanel.setScore(state.score);
     comboPanel.setCombo(state.combo);

@@ -24,3 +24,7 @@ export const INGREDIENTS = [
     textureUrl: "/assets/ingredients/mushroom.webp",
   },
 ] as const;
+
+export const INGREDIENTS_NAME = INGREDIENTS.map(({ id }) => {
+  return id;
+});

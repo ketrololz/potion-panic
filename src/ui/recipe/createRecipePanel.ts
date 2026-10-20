@@ -1,4 +1,4 @@
-import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
+import { Assets, Container, Graphics, Sprite, Text, Texture } from "pixi.js";
 import { RECIPE_LAYOUT } from "./constants/layout.constants";
 import { INGREDIENTS } from "../../game/objects/ingredients/constants/ingredinents.constants";
 
@@ -42,43 +42,41 @@ export async function createRecipePanel(recipe: readonly string[]) {
 
   view.addChild(title);
 
-  const items = await Promise.all(
-    recipe.map(async (id) => {
-      const definition = INGREDIENTS.find((item) => item.id === id);
+  const loadedIngredients = await Promise.all(
+    INGREDIENTS.map(async ({ id, textureUrl }) => {
+      const texture = await Assets.load(textureUrl);
 
-      if (!definition) {
-        throw new Error(`Неизвестный ингредиент: ${id}`);
-      }
-
-      const texture = await Assets.load(definition.textureUrl);
-      const icon = new Sprite(texture);
-
-      icon.anchor.set(0.5);
-      icon.scale.set(
-        RECIPE_LAYOUT.iconSize / Math.max(texture.width, texture.height),
-      );
-
-      const highlight = new Graphics()
-        .circle(0, 0, RECIPE_LAYOUT.highlightRadius)
-        .stroke({
-          color: RECIPE_LAYOUT.highlightColor,
-          width: RECIPE_LAYOUT.highlightWidth,
-        });
-
-      const arrow = new Text({
-        text: RECIPE_LAYOUT.arrow.text,
-        style: {
-          fontFamily: RECIPE_LAYOUT.fontFamily,
-          fontSize: RECIPE_LAYOUT.arrow.fontSize,
-          fill: RECIPE_LAYOUT.textColor,
-        },
-      });
-
-      arrow.anchor.set(0.5);
-
-      return { icon, highlight, arrow };
+      return [id, texture] as const;
     }),
   );
+
+  const textures = new Map<string, Texture>(loadedIngredients);
+
+  const items = recipe.map(() => {
+    const icon = new Sprite();
+
+    icon.anchor.set(0.5);
+
+    const highlight = new Graphics()
+      .circle(0, 0, RECIPE_LAYOUT.highlightRadius)
+      .stroke({
+        color: RECIPE_LAYOUT.highlightColor,
+        width: RECIPE_LAYOUT.highlightWidth,
+      });
+
+    const arrow = new Text({
+      text: RECIPE_LAYOUT.arrow.text,
+      style: {
+        fontFamily: RECIPE_LAYOUT.fontFamily,
+        fontSize: RECIPE_LAYOUT.arrow.fontSize,
+        fill: RECIPE_LAYOUT.textColor,
+      },
+    });
+
+    arrow.anchor.set(0.5);
+
+    return { icon, highlight, arrow };
+  });
 
   const rowWidth = (items.length - 1) * RECIPE_LAYOUT.iconStep;
 
@@ -104,7 +102,44 @@ export async function createRecipePanel(recipe: readonly string[]) {
     });
   }
 
+  let currentRecipe: readonly string[] = [];
+
+  function setRecipe(nextRecipe: readonly string[]) {
+    if (nextRecipe.length !== items.length) {
+      throw new Error(`Панель рассчитана на ${items.length} ингредиента`);
+    }
+
+    const isSameRecipe = nextRecipe.every(
+      (id, index) => id === currentRecipe[index],
+    );
+
+    if (isSameRecipe) return;
+
+    const nextTextures = nextRecipe.map((id) => {
+      const texture = textures.get(id);
+
+      if (!texture) {
+        throw new Error(`Неизвестный ингредиент: ${id}`);
+      }
+
+      return texture;
+    });
+
+    nextTextures.forEach((texture, index) => {
+      const { icon } = items[index];
+
+      icon.texture = texture;
+
+      icon.scale.set(
+        RECIPE_LAYOUT.iconSize / Math.max(texture.width, texture.height),
+      );
+    });
+
+    currentRecipe = [...nextRecipe];
+  }
+
+  setRecipe(recipe);
   setProgress(0);
 
-  return { view, setProgress };
+  return { view, setProgress, setRecipe };
 }

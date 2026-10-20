@@ -1,18 +1,30 @@
+import { generateRecipe } from "../recipe/generateRecipe";
 import { createRecipeProgress } from "../recipe/createRecipeProgress";
 import { SESSION_RULES } from "./constants/session.constants";
 import type { SessionStatus } from "./types/session.types";
 
-export function createGameSession(recipe: readonly string[]) {
-  const recipeProgress = createRecipeProgress(recipe);
+export function createGameSession(availableIngredients: readonly string[]) {
+  const ingredientIds = [...availableIngredients];
+
+  let recipe = generateRecipe(ingredientIds, SESSION_RULES.recipeLength);
+
+  let recipeProgress = createRecipeProgress(recipe);
 
   let score = 0;
   let combo = 0;
   let status: SessionStatus = "playing";
   let remainingMs: number = SESSION_RULES.durationMs;
 
+  function startNewRecipe() {
+    recipe = generateRecipe(ingredientIds, SESSION_RULES.recipeLength);
+
+    recipeProgress = createRecipeProgress(recipe);
+  }
+
   function getState() {
     return {
       ...recipeProgress.getProgress(),
+      recipe: [...recipe],
       score,
       combo,
       status,
@@ -40,7 +52,7 @@ export function createGameSession(recipe: readonly string[]) {
 
       if (combo < SESSION_RULES.maxCombo) combo += 1;
 
-      recipeProgress.reset();
+      startNewRecipe();
     }
 
     return {
@@ -66,7 +78,7 @@ export function createGameSession(recipe: readonly string[]) {
   }
 
   function restart() {
-    recipeProgress.reset();
+    startNewRecipe();
 
     score = 0;
     combo = 0;
