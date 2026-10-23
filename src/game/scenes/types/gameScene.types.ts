@@ -5,3 +5,7 @@ export interface Scene {
   update?: (deltaMs: number) => void;
   destroy: () => void;
 }
+
+export interface GameSceneOptions {
+  onExit: () => void;
+}

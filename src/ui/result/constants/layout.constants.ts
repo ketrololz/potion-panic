@@ -1,5 +1,5 @@
 export const RESULT_LAYOUT = {
-  width: 700,
+  width: 720,
   height: 600,
   radius: 24,
   backgroundColor: 0x211029,
@@ -10,13 +10,14 @@ export const RESULT_LAYOUT = {
   fontFamily: "Georgia",
   textColor: 0xfff3dc,
 
-  titleY: -180,
+  titleY: -240,
   titleFontSize: 42,
 
-  scoreY: -40,
+  scoreY: -100,
   scoreFontSize: 56,
 
-  buttonY: 160,
+  restartButtonY: 80,
+  menuButtonY: 220,
   buttonWidth: 440,
   buttonHeight: 100,
   buttonRadius: 16,

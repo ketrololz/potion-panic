@@ -6,6 +6,7 @@ export function createResultPanel({
   screenWidth,
   screenHeight,
   onRestart,
+  onExit,
 }: ResultPanelOptions) {
   const view = new Container();
 
@@ -57,31 +58,43 @@ export function createResultPanel({
 
   const scoreLabel = createLabel("", LAYOUT.scoreY, LAYOUT.scoreFontSize);
 
-  const button = new Container();
+  function createActionButton(text: string, y: number, onPress: () => void) {
+    const button = new Container();
 
-  const buttonBackground = new Graphics()
-    .roundRect(
-      -LAYOUT.buttonWidth / 2,
-      -LAYOUT.buttonHeight / 2,
-      LAYOUT.buttonWidth,
-      LAYOUT.buttonHeight,
-      LAYOUT.buttonRadius,
-    )
-    .fill(LAYOUT.buttonColor);
+    const background = new Graphics()
+      .roundRect(
+        -LAYOUT.buttonWidth / 2,
+        -LAYOUT.buttonHeight / 2,
+        LAYOUT.buttonWidth,
+        LAYOUT.buttonHeight,
+        LAYOUT.buttonRadius,
+      )
+      .fill(LAYOUT.buttonColor);
 
-  const buttonLabel = createLabel("ЗАНОВО", 0, LAYOUT.buttonFontSize);
+    const label = createLabel(text, 0, LAYOUT.buttonFontSize);
 
-  button.addChild(buttonBackground, buttonLabel);
-  button.position.set(0, LAYOUT.buttonY);
-  button.eventMode = "static";
-  button.cursor = "pointer";
+    button.addChild(background, label);
+    button.position.set(0, y);
+    button.eventMode = "static";
+    button.cursor = "pointer";
 
-  button.on("pointertap", (event) => {
-    event.stopPropagation();
-    onRestart();
-  });
+    button.on("pointertap", (event) => {
+      event.stopPropagation();
+      onPress();
+    });
 
-  view.addChild(backdrop, panel, title, scoreLabel, button);
+    return button;
+  }
+
+  const restartButton = createActionButton(
+    "ЗАНОВО",
+    LAYOUT.restartButtonY,
+    onRestart,
+  );
+
+  const menuButton = createActionButton("В МЕНЮ", LAYOUT.menuButtonY, onExit);
+
+  view.addChild(backdrop, panel, title, scoreLabel, restartButton, menuButton);
 
   function show(score: number) {
     if (view.visible) return;

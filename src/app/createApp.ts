@@ -47,7 +47,13 @@ export async function createApp(root: HTMLElement) {
   });
 
   function showGame() {
-    sceneManager.show(createGameScene).catch(console.error);
+    sceneManager
+      .show(() => createGameScene({ onExit: showMenu }))
+      .catch(console.error);
+  }
+
+  function showMenu() {
+    sceneManager.show(() => createMenuScene(showGame)).catch(console.error);
   }
 
   function update(ticker: Ticker) {
