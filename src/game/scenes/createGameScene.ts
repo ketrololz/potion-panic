@@ -67,7 +67,7 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
 
     scene.addChild(pauseButton.view)
 
-    const resultPanel = createResultPanel({
+    const resultPanel = await createResultPanel({
         screenHeight: GAME_HEIGHT,
         screenWidth: GAME_WIDTH,
         onRestart: () => {

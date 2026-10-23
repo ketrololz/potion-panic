@@ -6,9 +6,10 @@ interface ImageButtonOptions {
     width: number
     fontSize: number
     onPress: () => void
+    stopPropagation?: boolean
 }
 
-export async function createImageButton({ text, textureUrl, width, fontSize, onPress }: ImageButtonOptions) {
+export async function createImageButton({ text, textureUrl, width, fontSize, onPress, stopPropagation = false }: ImageButtonOptions) {
     const view = new Container()
 
     const texture = await Assets.load(textureUrl)
@@ -35,7 +36,13 @@ export async function createImageButton({ text, textureUrl, width, fontSize, onP
     view.eventMode = 'static'
     view.cursor = 'pointer'
 
-    view.on('pointertap', onPress)
+    view.on('pointertap', (event) => {
+        if (stopPropagation) {
+            event.stopPropagation()
+        }
+
+        onPress()
+    })
 
     return view
 }

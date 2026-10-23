@@ -1,8 +1,9 @@
 import { Container, Graphics, Rectangle, Text } from 'pixi.js'
 import type { ResultPanelOptions } from './types/result.types'
 import { RESULT_LAYOUT as LAYOUT } from './constants/layout.constants'
+import { createImageButton } from '../button/createImageButton'
 
-export function createResultPanel({ screenWidth, screenHeight, onRestart, onExit }: ResultPanelOptions) {
+export async function createResultPanel({ screenWidth, screenHeight, onRestart, onExit }: ResultPanelOptions) {
     const view = new Container()
 
     view.visible = false
@@ -40,31 +41,27 @@ export function createResultPanel({ screenWidth, screenHeight, onRestart, onExit
 
     const scoreLabel = createLabel('', LAYOUT.scoreY, LAYOUT.scoreFontSize)
 
-    function createActionButton(text: string, y: number, onPress: () => void) {
-        const button = new Container()
+    const restartButton = await createImageButton({
+        text: 'ЗАНОВО',
+        textureUrl: '/assets/menu/button-action.webp',
+        width: LAYOUT.buttonWidth,
+        fontSize: LAYOUT.buttonFontSize,
+        onPress: onRestart,
+        stopPropagation: true
+    })
 
-        const background = new Graphics()
-            .roundRect(-LAYOUT.buttonWidth / 2, -LAYOUT.buttonHeight / 2, LAYOUT.buttonWidth, LAYOUT.buttonHeight, LAYOUT.buttonRadius)
-            .fill(LAYOUT.buttonColor)
+    restartButton.position.set(0, LAYOUT.restartButtonY)
 
-        const label = createLabel(text, 0, LAYOUT.buttonFontSize)
+    const menuButton = await createImageButton({
+        text: 'В МЕНЮ',
+        textureUrl: '/assets/menu/button-cancel.webp',
+        width: LAYOUT.buttonWidth,
+        fontSize: LAYOUT.buttonFontSize,
+        onPress: onExit,
+        stopPropagation: true
+    })
 
-        button.addChild(background, label)
-        button.position.set(0, y)
-        button.eventMode = 'static'
-        button.cursor = 'pointer'
-
-        button.on('pointertap', (event) => {
-            event.stopPropagation()
-            onPress()
-        })
-
-        return button
-    }
-
-    const restartButton = createActionButton('ЗАНОВО', LAYOUT.restartButtonY, onRestart)
-
-    const menuButton = createActionButton('В МЕНЮ', LAYOUT.menuButtonY, onExit)
+    menuButton.position.set(0, LAYOUT.menuButtonY)
 
     view.addChild(backdrop, panel, title, scoreLabel, restartButton, menuButton)
 
