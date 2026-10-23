@@ -1,7 +1,11 @@
-import { Application, Ticker } from "pixi.js";
+import { Application } from "pixi.js";
+import type { Container, Ticker } from "pixi.js";
 import { createGameScene } from "../game/scenes/createGameScene";
+
 import { fitScene } from "../game/layout/fitScene";
 import { createDebugOverlay } from "../game/debug/createDebugOverlay";
+import { createSceneManager } from "./createSceneManager";
+import { createMenuScene } from "../game/scenes/createMenuScene";
 
 export async function createApp(root: HTMLElement) {
   const app = new Application();
@@ -16,40 +20,54 @@ export async function createApp(root: HTMLElement) {
 
   root.appendChild(app.canvas);
 
-  const scene = await createGameScene();
-
-  app.stage.addChild(scene.view);
-
-  function resize() {
-    fitScene(scene.view, app.screen.width, app.screen.height);
-  }
-
-  resize();
-
-  function update(ticker: Ticker) {
-    scene.update(ticker.deltaMS);
-  }
-
-  app.ticker.add(update);
-
+  let activeView: Container | undefined;
   let destroyDebug: (() => void) | undefined;
 
-  if (import.meta.env.DEV) {
-    const targets = scene.view.children.filter(
-      (child) => child.label !== "debug_hide",
-    );
+  function resize() {
+    if (!activeView) return;
 
-    destroyDebug = createDebugOverlay(app, targets);
+    fitScene(activeView, app.screen.width, app.screen.height);
   }
 
+  const sceneManager = createSceneManager(app.stage, (scene) => {
+    destroyDebug?.();
+    destroyDebug = undefined;
+
+    activeView = scene.view;
+
+    resize();
+
+    if (import.meta.env.DEV) {
+      const targets = scene.view.children.filter(
+        (child) => child.label !== "debug_hide",
+      );
+
+      destroyDebug = createDebugOverlay(app, targets);
+    }
+  });
+
+  function showGame() {
+    sceneManager.show(createGameScene).catch(console.error);
+  }
+
+  function update(ticker: Ticker) {
+    sceneManager.update(ticker.deltaMS);
+  }
+
+  await sceneManager.show(() => createMenuScene(showGame));
+
+  app.ticker.add(update);
   app.renderer.on("resize", resize);
 
   return {
     destroy() {
       destroyDebug?.();
 
-      app.renderer.off("resize", resize);
       app.ticker.remove(update);
+      app.renderer.off("resize", resize);
+
+      sceneManager.destroy();
+
       app.destroy(true, { children: true });
     },
   };

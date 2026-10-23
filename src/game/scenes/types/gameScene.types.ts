@@ -1,6 +1,7 @@
 import type { Container } from "pixi.js";
 
-export interface GameScene {
+export interface Scene {
   view: Container;
-  update: (deltaMs: number) => void;
+  update?: (deltaMs: number) => void;
+  destroy: () => void;
 }

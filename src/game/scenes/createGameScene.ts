@@ -9,12 +9,12 @@ import { applyGameLayout } from "../layout/applyGameLayout";
 import { createComboPanel } from "../../ui/combo/createComboPanel";
 import { SESSION_RULES } from "../gameplay/session/constants/session.constants";
 import { createTimerPanel } from "../../ui/timer/createTimerPanel";
-import type { GameScene } from "./types/gameScene.types";
+import type { Scene } from "./types/gameScene.types";
 import { createPauseButton } from "../../ui/pause/createPauseButton";
 import { createResultPanel } from "../../ui/result/createResultPanel";
 import { INGREDIENTS_NAME } from "../objects/ingredients/constants/ingredinents.constants";
 
-export async function createGameScene(): Promise<GameScene> {
+export async function createGameScene(): Promise<Scene> {
   const scene = new Container();
 
   const texture = await Assets.load("/assets/backgrounds/lab.webp");
@@ -125,5 +125,8 @@ export async function createGameScene(): Promise<GameScene> {
   return {
     view: scene,
     update,
+    destroy() {
+      scene.destroy({ children: true });
+    },
   };
 }
