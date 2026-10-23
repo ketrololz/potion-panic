@@ -12,7 +12,6 @@ export async function createMenuScene(onStart: () => void): Promise<Scene> {
     const [backgroundTexture, logoTexture] = await Promise.all([Assets.load('/assets/backgrounds/lab.webp'), Assets.load('/assets/menu/logo.webp')])
 
     const background = new Sprite(backgroundTexture)
-    background.label = 'debug_hide'
     background.eventMode = 'none'
 
     const logo = new Sprite(logoTexture)
@@ -41,8 +40,6 @@ export async function createMenuScene(onStart: () => void): Promise<Scene> {
     })
 
     const bounds = new Graphics().rect(0, 0, GAME_WIDTH, GAME_HEIGHT).fill(0xffffff)
-
-    bounds.label = 'debug_hide'
 
     view.addChild(background, logo, startButton, bounds, rulesButton, rulesPanel.view)
     view.mask = bounds

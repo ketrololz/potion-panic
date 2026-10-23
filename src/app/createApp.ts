@@ -3,7 +3,6 @@ import type { Container, Ticker } from 'pixi.js'
 import { createGameScene } from '../game/scenes/createGameScene'
 
 import { fitScene } from '../game/layout/fitScene'
-import { createDebugOverlay } from '../game/debug/createDebugOverlay'
 import { createSceneManager } from './createSceneManager'
 import { createMenuScene } from '../game/scenes/createMenuScene'
 
@@ -21,7 +20,6 @@ export async function createApp(root: HTMLElement) {
     root.appendChild(app.canvas)
 
     let activeView: Container | undefined
-    let destroyDebug: (() => void) | undefined
 
     function resize() {
         if (!activeView) return
@@ -30,18 +28,9 @@ export async function createApp(root: HTMLElement) {
     }
 
     const sceneManager = createSceneManager(app.stage, (scene) => {
-        destroyDebug?.()
-        destroyDebug = undefined
-
         activeView = scene.view
 
         resize()
-
-        if (import.meta.env.DEV) {
-            const targets = scene.view.children.filter((child) => child.label !== 'debug_hide')
-
-            destroyDebug = createDebugOverlay(app, targets)
-        }
     })
 
     function showGame() {
@@ -63,8 +52,6 @@ export async function createApp(root: HTMLElement) {
 
     return {
         destroy() {
-            destroyDebug?.()
-
             app.ticker.remove(update)
             app.renderer.off('resize', resize)
 

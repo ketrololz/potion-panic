@@ -20,8 +20,6 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
     const texture = await Assets.load('/assets/backgrounds/lab.webp')
     const background = new Sprite(texture)
 
-    background.label = 'debug_hide'
-
     const bounds = new Graphics().rect(0, 0, GAME_WIDTH, GAME_HEIGHT).fill(0xffffff)
     scene.addChild(background, bounds)
 
