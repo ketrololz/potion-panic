@@ -6,9 +6,11 @@ interface MenuLayoutTargets {
     background: Sprite
     logo: Sprite
     startButton: Container
+    rulesButton: Container
+    rulesPanel: Container
 }
 
-export function applyMenuLayout({ background, logo, startButton }: MenuLayoutTargets) {
+export function applyMenuLayout({ background, logo, startButton, rulesButton, rulesPanel }: MenuLayoutTargets) {
     const centerX = GAME_WIDTH / 2
 
     background.anchor.set(0.5)
@@ -20,4 +22,8 @@ export function applyMenuLayout({ background, logo, startButton }: MenuLayoutTar
     logo.position.set(centerX, MENU_LAYOUT.logo.centerY)
 
     startButton.position.set(centerX, MENU_LAYOUT.startButton.centerY)
+
+    rulesButton.position.set(centerX, MENU_LAYOUT.rulesButton.centerY)
+
+    rulesPanel.position.set(centerX, GAME_HEIGHT / 2)
 }
