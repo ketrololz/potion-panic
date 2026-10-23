@@ -13,6 +13,7 @@ import type { GameSceneOptions, Scene } from './types/gameScene.types'
 import { createPauseButton } from '../../ui/pause/createPauseButton'
 import { createResultPanel } from '../../ui/result/createResultPanel'
 import { INGREDIENTS_NAME } from '../objects/ingredients/constants/ingredinents.constants'
+import { createPausePanel } from '../../ui/pause/createPausePanel'
 
 export async function createGameScene({ onExit }: GameSceneOptions): Promise<Scene> {
     const scene = new Container()
@@ -54,29 +55,31 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
     scene.addChild(timerPanel.view)
 
     const pauseButton = createPauseButton(() => {
-        const { status } = session.getState()
-
-        if (status === 'playing') {
-            session.pause()
-        } else if (status === 'paused') {
-            session.resume()
-        }
-
-        pauseButton.setPaused(session.getState().status === 'paused')
+        session.pause()
+        syncStatus()
     })
 
     scene.addChild(pauseButton.view)
 
     const resultPanel = await createResultPanel({
-        screenHeight: GAME_HEIGHT,
         screenWidth: GAME_WIDTH,
-        onRestart: () => {
-            session.restart()
-            syncPanels()
-            resultPanel.hide()
-        },
+        screenHeight: GAME_HEIGHT,
+        onRestart: restartGame,
         onExit
     })
+
+    const pausePanel = await createPausePanel({
+        screenWidth: GAME_WIDTH,
+        screenHeight: GAME_HEIGHT,
+        onResume: () => {
+            session.resume()
+            syncStatus()
+        },
+        onRestart: restartGame,
+        onExit
+    })
+
+    scene.addChild(pausePanel.view)
 
     scene.addChild(resultPanel.view)
 
@@ -89,22 +92,16 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
         comboPanel: comboPanel.view,
         timerPanel: timerPanel.view,
         pauseButton: pauseButton.view,
-        resultPanel: resultPanel.view
+        resultPanel: resultPanel.view,
+        pausePanel: pausePanel.view
     })
 
     function update(deltaMs: number) {
         session.update(deltaMs)
 
-        const state = session.getState()
-        const isPlaying = state.status === 'playing'
+        timerPanel.setTime(session.getState().remainingMs)
 
-        timerPanel.setTime(state.remainingMs)
-
-        ingredients.eventMode = isPlaying ? 'passive' : 'none'
-
-        pauseButton.setEnabled(state.status !== 'finished')
-
-        if (state.status === 'finished') resultPanel.show(state.score)
+        syncStatus()
     }
 
     function syncPanels() {
@@ -116,6 +113,27 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
         comboPanel.setCombo(state.combo)
         timerPanel.setTime(state.remainingMs)
         pauseButton.setPaused(state.status === 'paused')
+    }
+
+    function restartGame() {
+        session.restart()
+        syncPanels()
+        syncStatus()
+    }
+
+    function syncStatus() {
+        const state = session.getState()
+
+        ingredients.eventMode = state.status === 'playing' ? 'passive' : 'none'
+
+        pauseButton.setEnabled(state.status === 'playing')
+        pausePanel.setVisible(state.status === 'paused')
+
+        if (state.status === 'finished') {
+            resultPanel.show(state.score)
+        } else {
+            resultPanel.hide()
+        }
     }
 
     return {

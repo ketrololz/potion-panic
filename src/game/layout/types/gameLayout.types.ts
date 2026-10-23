@@ -10,4 +10,5 @@ export interface GameLayoutTargets {
     timerPanel: Container
     pauseButton: Container
     resultPanel: Container
+    pausePanel: Container
 }

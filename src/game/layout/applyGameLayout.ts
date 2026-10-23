@@ -11,7 +11,8 @@ export function applyGameLayout({
     comboPanel,
     timerPanel,
     pauseButton,
-    resultPanel
+    resultPanel,
+    pausePanel
 }: GameLayoutTargets): void {
     const centerX = GAME_WIDTH / 2
 
@@ -42,4 +43,6 @@ export function applyGameLayout({
     pauseButton.position.set(GAME_WIDTH * GAME_LAYOUT.pause.centerXRatio, GAME_LAYOUT.pause.centerY)
 
     resultPanel.position.set(centerX, GAME_HEIGHT / 2)
+
+    pausePanel.position.set(centerX, GAME_HEIGHT / 2)
 }
