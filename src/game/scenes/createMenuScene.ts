@@ -1,59 +1,47 @@
-import { Container, Graphics, Text } from "pixi.js";
-import { MENU_LAYOUT as LAYOUT } from "./menu/constants/layout.constants";
-import type { Scene } from "./types/gameScene.types";
-import { GAME_WIDTH } from "../constants/config/config.constants";
+import { Assets, Container, Graphics, Sprite } from 'pixi.js'
+import type { Scene } from './types/gameScene.types'
+import { GAME_WIDTH, GAME_HEIGHT } from '../constants/config/config.constants'
+import { MENU_LAYOUT } from './menu/constants/layout.constants'
+import { applyMenuLayout } from '../layout/applyMenuLayout'
+import { createImageButton } from '../../ui/button/createImageButton'
 
-export function createMenuScene(onStart: () => void): Scene {
-  const view = new Container();
+export async function createMenuScene(onStart: () => void): Promise<Scene> {
+    const view = new Container()
 
-  const title = new Text({
-    text: "Potion Panic",
-    style: {
-      fontFamily: LAYOUT.fontFamily,
-      fontSize: LAYOUT.titleFontSize,
-      fill: LAYOUT.textColor,
-    },
-  });
+    const [backgroundTexture, logoTexture] = await Promise.all([Assets.load('/assets/backgrounds/lab.webp'), Assets.load('/assets/menu/logo.webp')])
 
-  title.anchor.set(0.5);
-  title.position.set(GAME_WIDTH / 2, LAYOUT.titleY);
+    const background = new Sprite(backgroundTexture)
+    background.label = 'debug_hide'
+    background.eventMode = 'none'
 
-  const button = new Container();
+    const logo = new Sprite(logoTexture)
+    logo.eventMode = 'none'
 
-  const background = new Graphics()
-    .roundRect(
-      -LAYOUT.buttonWidth / 2,
-      -LAYOUT.buttonHeight / 2,
-      LAYOUT.buttonWidth,
-      LAYOUT.buttonHeight,
-      LAYOUT.buttonRadius,
-    )
-    .fill(LAYOUT.buttonColor);
+    const startButton = await createImageButton({
+        text: 'СТАРТ',
+        textureUrl: '/assets/menu/button-action.webp',
+        width: MENU_LAYOUT.startButton.width,
+        fontSize: MENU_LAYOUT.startButton.fontSize,
+        onPress: onStart
+    })
 
-  const label = new Text({
-    text: "СТАРТ",
-    style: {
-      fontFamily: LAYOUT.fontFamily,
-      fontSize: LAYOUT.buttonFontSize,
-      fill: LAYOUT.textColor,
-    },
-  });
+    const bounds = new Graphics().rect(0, 0, GAME_WIDTH, GAME_HEIGHT).fill(0xffffff)
 
-  label.anchor.set(0.5);
+    bounds.label = 'debug_hide'
 
-  button.addChild(background, label);
-  button.position.set(GAME_WIDTH / 2, LAYOUT.buttonY);
-  button.eventMode = "static";
-  button.cursor = "pointer";
+    view.addChild(background, logo, startButton, bounds)
+    view.mask = bounds
 
-  button.on("pointertap", onStart);
+    applyMenuLayout({
+        background,
+        logo,
+        startButton
+    })
 
-  view.addChild(title, button);
-
-  return {
-    view,
-    destroy() {
-      view.destroy({ children: true });
-    },
-  };
+    return {
+        view,
+        destroy() {
+            view.destroy({ children: true })
+        }
+    }
 }

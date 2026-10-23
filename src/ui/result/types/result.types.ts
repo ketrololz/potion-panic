@@ -1,6 +1,6 @@
 export interface ResultPanelOptions {
-  screenWidth: number;
-  screenHeight: number;
-  onRestart: () => void;
-  onExit: () => void;
+    screenWidth: number
+    screenHeight: number
+    onRestart: () => void
+    onExit: () => void
 }

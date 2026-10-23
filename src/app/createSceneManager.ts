@@ -1,50 +1,47 @@
-import { Container } from "pixi.js";
+import { Container } from 'pixi.js'
 
-import type { Scene } from "../game/scenes/types/gameScene.types";
-import type { SceneFactory } from "./types/app.types";
+import type { Scene } from '../game/scenes/types/gameScene.types'
+import type { SceneFactory } from './types/app.types'
 
-export function createSceneManager(
-  host: Container,
-  onChange: (scene: Scene) => void,
-) {
-  let activeScene: Scene | undefined;
-  let switching = false;
-  let destroyed = false;
+export function createSceneManager(host: Container, onChange: (scene: Scene) => void) {
+    let activeScene: Scene | undefined
+    let switching = false
+    let destroyed = false
 
-  async function show(createScene: SceneFactory) {
-    if (switching || destroyed) return;
+    async function show(createScene: SceneFactory) {
+        if (switching || destroyed) return
 
-    switching = true;
+        switching = true
 
-    try {
-      const nextScene = await createScene();
+        try {
+            const nextScene = await createScene()
 
-      if (destroyed) {
-        nextScene.destroy();
-        return;
-      }
+            if (destroyed) {
+                nextScene.destroy()
+                return
+            }
 
-      activeScene?.destroy();
+            activeScene?.destroy()
 
-      activeScene = nextScene;
+            activeScene = nextScene
 
-      host.addChild(nextScene.view);
-      onChange(nextScene);
-    } finally {
-      switching = false;
+            host.addChild(nextScene.view)
+            onChange(nextScene)
+        } finally {
+            switching = false
+        }
     }
-  }
 
-  function update(deltaMs: number) {
-    activeScene?.update?.(deltaMs);
-  }
+    function update(deltaMs: number) {
+        activeScene?.update?.(deltaMs)
+    }
 
-  function destroy() {
-    destroyed = true;
+    function destroy() {
+        destroyed = true
 
-    activeScene?.destroy();
-    activeScene = undefined;
-  }
+        activeScene?.destroy()
+        activeScene = undefined
+    }
 
-  return { show, update, destroy };
+    return { show, update, destroy }
 }

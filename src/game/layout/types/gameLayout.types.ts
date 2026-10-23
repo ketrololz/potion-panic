@@ -1,13 +1,13 @@
-import type { Container, Sprite } from "pixi.js";
+import type { Container, Sprite } from 'pixi.js'
 
 export interface GameLayoutTargets {
-  background: Sprite;
-  cauldron: Container;
-  ingredients: Container;
-  recipePanel: Container;
-  scorePanel: Container;
-  comboPanel: Container;
-  timerPanel: Container;
-  pauseButton: Container;
-  resultPanel: Container;
+    background: Sprite
+    cauldron: Container
+    ingredients: Container
+    recipePanel: Container
+    scorePanel: Container
+    comboPanel: Container
+    timerPanel: Container
+    pauseButton: Container
+    resultPanel: Container
 }

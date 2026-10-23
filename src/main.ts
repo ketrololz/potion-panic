@@ -1,18 +1,18 @@
-import { createApp } from "./app/createApp";
-import "./style.css";
+import { createApp } from './app/createApp'
+import './style.css'
 
 async function bootstrap() {
-  const root = document.querySelector<HTMLDivElement>("#app");
+    const root = document.querySelector<HTMLDivElement>('#app')
 
-  if (!root) {
-    throw new Error("#app не найден");
-  }
+    if (!root) {
+        throw new Error('#app не найден')
+    }
 
-  const app = await createApp(root);
+    const app = await createApp(root)
 
-  if (import.meta.hot) {
-    import.meta.hot.dispose(() => app.destroy());
-  }
+    if (import.meta.hot) {
+        import.meta.hot.dispose(() => app.destroy())
+    }
 }
 
-bootstrap().catch(console.error);
+bootstrap().catch(console.error)
