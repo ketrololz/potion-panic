@@ -1,13 +1,8 @@
 export const PAUSE_BUTTON_STYLE = {
-    radius: 56,
-    backgroundColor: 0x211029,
-    borderColor: 0xffd166,
-    borderWidth: 3,
-    fontFamily: 'Georgia',
-    fontSize: 40,
-    textColor: 0xfff3dc,
+    width: 120,
+    iconSize: 54,
     disabledAlpha: 0.4
-}
+} as const
 
 export const PAUSE_PANEL_LAYOUT = {
     width: 820,

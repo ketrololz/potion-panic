@@ -4,11 +4,10 @@ import { createCauldron } from '../objects/cauldron/createCauldron'
 import { createIngredientGroup } from '../objects/ingredients/ingredientGroup/createIngredientGroup'
 import { createRecipePanel } from '../../ui/recipe/createRecipePanel'
 import { createGameSession } from '../gameplay/session/createGameSession'
-import { createScorePanel } from '../../ui/score/createScorePanel'
+import { createHud } from '../../ui/hud/createHud'
 import { applyGameLayout } from '../layout/applyGameLayout'
 import { createComboPanel } from '../../ui/combo/createComboPanel'
 import { SESSION_RULES } from '../gameplay/session/constants/session.constants'
-import { createTimerPanel } from '../../ui/timer/createTimerPanel'
 import type { GameSceneOptions, Scene } from './types/gameScene.types'
 import { createPauseButton } from '../../ui/pause/createPauseButton'
 import { createResultPanel } from '../../ui/result/createResultPanel'
@@ -45,16 +44,13 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
     })
     scene.addChild(ingredients)
 
-    const scorePanel = createScorePanel(session.getState().score)
-    scene.addChild(scorePanel.view)
-
     const comboPanel = await createComboPanel(session.getState().combo, SESSION_RULES.maxCombo)
     scene.addChild(comboPanel.view)
 
-    const timerPanel = createTimerPanel(session.getState().remainingMs)
-    scene.addChild(timerPanel.view)
+    const hud = await createHud(session.getState())
+    scene.addChild(hud.view)
 
-    const pauseButton = createPauseButton(() => {
+    const pauseButton = await createPauseButton(() => {
         session.pause()
         syncStatus()
     })
@@ -88,9 +84,8 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
         cauldron,
         ingredients,
         recipePanel: recipePanel.view,
-        scorePanel: scorePanel.view,
+        hud: hud.view,
         comboPanel: comboPanel.view,
-        timerPanel: timerPanel.view,
         pauseButton: pauseButton.view,
         resultPanel: resultPanel.view,
         pausePanel: pausePanel.view
@@ -99,7 +94,7 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
     function update(deltaMs: number) {
         session.update(deltaMs)
 
-        timerPanel.setTime(session.getState().remainingMs)
+        hud.setTime(session.getState().remainingMs)
 
         syncStatus()
     }
@@ -109,10 +104,9 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
 
         recipePanel.setRecipe(state.recipe)
         recipePanel.setProgress(state.currentStep)
-        scorePanel.setScore(state.score)
+        hud.setScore(state.score)
         comboPanel.setCombo(state.combo)
-        timerPanel.setTime(state.remainingMs)
-        pauseButton.setPaused(state.status === 'paused')
+        hud.setTime(state.remainingMs)
     }
 
     function restartGame() {

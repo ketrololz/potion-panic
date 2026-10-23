@@ -5,9 +5,8 @@ export interface GameLayoutTargets {
     cauldron: Container
     ingredients: Container
     recipePanel: Container
-    scorePanel: Container
     comboPanel: Container
-    timerPanel: Container
+    hud: Container
     pauseButton: Container
     resultPanel: Container
     pausePanel: Container

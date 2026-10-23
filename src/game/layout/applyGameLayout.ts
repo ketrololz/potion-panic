@@ -7,9 +7,8 @@ export function applyGameLayout({
     cauldron,
     ingredients,
     recipePanel,
-    scorePanel,
     comboPanel,
-    timerPanel,
+    hud,
     pauseButton,
     resultPanel,
     pausePanel
@@ -36,11 +35,9 @@ export function applyGameLayout({
 
     comboPanel.position.set(centerX, GAME_HEIGHT - GAME_LAYOUT.combo.bottomOffset)
 
-    scorePanel.position.set(GAME_WIDTH * GAME_LAYOUT.score.centerXRatio, GAME_LAYOUT.score.centerY)
+    hud.position.set(centerX, GAME_LAYOUT.hud.centerY)
 
-    timerPanel.position.set(GAME_WIDTH * GAME_LAYOUT.timer.centerXRatio, GAME_LAYOUT.timer.centerY)
-
-    pauseButton.position.set(GAME_WIDTH * GAME_LAYOUT.pause.centerXRatio, GAME_LAYOUT.pause.centerY)
+    pauseButton.position.set(GAME_LAYOUT.pause.leftOffset, GAME_HEIGHT - GAME_LAYOUT.pause.bottomOffset)
 
     resultPanel.position.set(centerX, GAME_HEIGHT / 2)
 

@@ -9,19 +9,14 @@ export const GAME_LAYOUT = {
     recipe: {
         centerYRatio: 0.25
     },
-    score: {
-        centerY: 150,
-        centerXRatio: 0.25
-    },
     combo: {
         bottomOffset: 130
     },
-    timer: {
-        centerXRatio: 0.75,
+    hud: {
         centerY: 150
     },
     pause: {
-        centerXRatio: 0.5,
-        centerY: 150
+        leftOffset: 100,
+        bottomOffset: 130
     }
 } as const
