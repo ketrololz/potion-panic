@@ -13,8 +13,9 @@ import { createPauseButton } from '../../ui/pause/createPauseButton'
 import { createResultPanel } from '../../ui/result/createResultPanel'
 import { INGREDIENTS_NAME } from '../objects/ingredients/constants/ingredinents.constants'
 import { createPausePanel } from '../../ui/pause/createPausePanel'
+import type { ResultData } from '../../ui/result/types/result.types'
 
-export async function createGameScene({ onExit }: GameSceneOptions): Promise<Scene> {
+export async function createGameScene({ onExit, recordScore }: GameSceneOptions): Promise<Scene> {
     const scene = new Container()
 
     const texture = await Assets.load('/assets/backgrounds/lab.webp')
@@ -29,6 +30,7 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
     scene.addChild(cauldron)
 
     const session = createGameSession(INGREDIENTS_NAME)
+    let finalResult: ResultData | undefined
 
     const recipePanel = await createRecipePanel(session.getState().recipe)
     scene.addChild(recipePanel.view)
@@ -108,6 +110,8 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
     }
 
     function restartGame() {
+        finalResult = undefined
+
         session.restart()
         syncPanels()
         syncStatus()
@@ -122,7 +126,14 @@ export async function createGameScene({ onExit }: GameSceneOptions): Promise<Sce
         pausePanel.setVisible(state.status === 'paused')
 
         if (state.status === 'finished') {
-            resultPanel.show(state.score)
+            if (finalResult === undefined) {
+                finalResult = {
+                    score: state.score,
+                    bestScore: recordScore(state.score)
+                }
+            }
+
+            resultPanel.show(finalResult)
         } else {
             resultPanel.hide()
         }

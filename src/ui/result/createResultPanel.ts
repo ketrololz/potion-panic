@@ -1,5 +1,5 @@
 import { Container, Graphics, Rectangle, Text } from 'pixi.js'
-import type { ResultPanelOptions } from './types/result.types'
+import type { ResultData, ResultPanelOptions } from './types/result.types'
 import { RESULT_LAYOUT as LAYOUT } from './constants/layout.constants'
 import { createImageButton } from '../button/createImageButton'
 
@@ -40,6 +40,7 @@ export async function createResultPanel({ screenWidth, screenHeight, onRestart, 
     const title = createLabel('ВРЕМЯ ВЫШЛО', LAYOUT.titleY, LAYOUT.titleFontSize)
 
     const scoreLabel = createLabel('', LAYOUT.scoreY, LAYOUT.scoreFontSize)
+    const bestScoreLabel = createLabel('', LAYOUT.bestScoreY, LAYOUT.bestScoreFontSize)
 
     const restartButton = await createImageButton({
         text: 'ЗАНОВО',
@@ -63,12 +64,13 @@ export async function createResultPanel({ screenWidth, screenHeight, onRestart, 
 
     menuButton.position.set(0, LAYOUT.menuButtonY)
 
-    view.addChild(backdrop, panel, title, scoreLabel, restartButton, menuButton)
+    view.addChild(backdrop, panel, title, scoreLabel, bestScoreLabel, restartButton, menuButton)
 
-    function show(score: number) {
+    function show({ score, bestScore }: ResultData) {
         if (view.visible) return
 
         scoreLabel.text = `Очки: ${score}`
+        bestScoreLabel.text = `Рекорд: ${bestScore}`
         view.visible = true
     }
 

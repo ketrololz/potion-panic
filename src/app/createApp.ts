@@ -5,6 +5,7 @@ import { createGameScene } from '../game/scenes/createGameScene'
 import { fitScene } from '../game/layout/fitScene'
 import { createSceneManager } from './createSceneManager'
 import { createMenuScene } from '../game/scenes/createMenuScene'
+import { createBestScoreStore } from '../game/progress/createBestScoreStore'
 
 export async function createApp(root: HTMLElement) {
     const app = new Application()
@@ -33,8 +34,10 @@ export async function createApp(root: HTMLElement) {
         resize()
     })
 
+    const bestScoreStore = createBestScoreStore()
+
     function showGame() {
-        sceneManager.show(() => createGameScene({ onExit: showMenu })).catch(console.error)
+        sceneManager.show(() => createGameScene({ onExit: showMenu, recordScore: bestScoreStore.recordScore })).catch(console.error)
     }
 
     function showMenu() {

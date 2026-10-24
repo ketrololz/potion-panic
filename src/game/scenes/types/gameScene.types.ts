@@ -8,4 +8,5 @@ export interface Scene {
 
 export interface GameSceneOptions {
     onExit: () => void
+    recordScore: (score: number) => number
 }
