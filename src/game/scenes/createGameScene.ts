@@ -1,4 +1,6 @@
 import { Assets, Container, Graphics, Sprite } from 'pixi.js'
+import { createScreenShake } from '../effects/shake/createScreenShake'
+import { createSelectionEffects } from '../effects/selection/createSelectionEffects'
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants/config/config.constants'
 import { createCauldron } from '../objects/cauldron/createCauldron'
 import { createIngredientGroup } from '../objects/ingredients/ingredientGroup/createIngredientGroup'
@@ -16,7 +18,10 @@ import { createPausePanel } from '../../ui/pause/createPausePanel'
 import type { ResultData } from '../../ui/result/types/result.types'
 
 export async function createGameScene({ onExit, recordScore }: GameSceneOptions): Promise<Scene> {
+    const viewport = new Container()
     const scene = new Container()
+    viewport.addChild(scene)
+    const screenShake = createScreenShake(scene)
 
     const texture = await Assets.load('/assets/backgrounds/lab.webp')
     const background = new Sprite(texture)
@@ -37,13 +42,29 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
 
     recipePanel.setProgress(session.getState().currentStep)
 
+    const liquid = cauldron.getChildByLabel('liquid')
+    if (!liquid) throw new Error('Не найден слой жидкости котла')
+    const selectionEffects = createSelectionEffects(liquid)
+
     const ingredients = await createIngredientGroup((id) => {
-        session.selectIngredient(id)
+        const { outcome } = session.selectIngredient(id)
+
+        if (outcome !== 'inactive') {
+            const source = ingredients.getIngredientPosition(id, selectionEffects.view)
+            if (outcome === 'wrong') {
+                selectionEffects.error(source)
+                screenShake.play()
+            } else {
+                selectionEffects.success(source)
+            }
+        }
+
+        if (outcome === 'completed') ingredients.shuffle()
 
         syncPanels()
         syncStatus()
     })
-    scene.addChild(ingredients)
+    scene.addChild(ingredients.view, selectionEffects.view)
 
     const comboPanel = await createComboPanel(session.getState().combo, SESSION_RULES.maxCombo)
     scene.addChild(comboPanel.view)
@@ -83,7 +104,7 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
     applyGameLayout({
         background,
         cauldron,
-        ingredients,
+        ingredients: ingredients.view,
         recipePanel: recipePanel.view,
         hud: hud.view,
         comboPanel: comboPanel.view,
@@ -114,6 +135,9 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
         finalResult = undefined
 
         session.restart()
+        ingredients.reset()
+        selectionEffects.clear()
+        screenShake.clear()
         syncPanels()
         syncStatus()
     }
@@ -121,7 +145,9 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
     function syncStatus() {
         const state = session.getState()
 
-        ingredients.eventMode = state.status === 'playing' ? 'passive' : 'none'
+        ingredients.setEnabled(state.status === 'playing')
+        selectionEffects.setPaused(state.status !== 'playing')
+        screenShake.setPaused(state.status === 'paused')
 
         pauseButton.setEnabled(state.status === 'playing')
         pausePanel.setVisible(state.status === 'paused')
@@ -141,10 +167,10 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
     }
 
     return {
-        view: scene,
+        view: viewport,
         update,
         destroy() {
-            scene.destroy({ children: true })
+            viewport.destroy({ children: true })
         }
     }
 }

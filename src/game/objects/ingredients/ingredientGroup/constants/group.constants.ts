@@ -5,3 +5,8 @@ export const GROUP_LAYOT = {
     rowStep: 260,
     centerFromTopRation: 0.45
 }
+
+export const GROUP_SHUFFLE = {
+    duration: 0.42,
+    stagger: 0.025
+} as const

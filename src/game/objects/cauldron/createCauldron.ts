@@ -12,6 +12,7 @@ export async function createCauldron(): Promise<Container> {
 
     body.anchor.set(0.5, 1)
 
+    liquid.label = 'liquid'
     liquid.anchor.set(0.5)
 
     liquid.width = body.width * CAULDRON_LAYOUT.liquid.widthRatio

@@ -1,23 +1,32 @@
-import { Assets, Sprite } from 'pixi.js'
+import { Assets, Container, Rectangle, Sprite } from 'pixi.js'
 import type { IngredientOptions } from './types/ingredient.types'
+import { createIngredientEffects } from './createIngredientEffects'
 
-export async function createIngredient(options: IngredientOptions): Promise<Sprite> {
+export async function createIngredient(options: IngredientOptions): Promise<Container> {
     const texture = await Assets.load(options.textureUrl)
+    const view = new Container()
+    const floating = new Container()
+    const visual = new Container()
+    const icon = new Sprite(texture)
 
-    const ingredient = new Sprite(texture)
+    icon.anchor.set(0.5)
+    icon.scale.set(options.size / Math.max(texture.width, texture.height))
 
-    ingredient.anchor.set(0.5)
+    visual.addChild(icon)
+    floating.addChild(visual)
+    floating.eventMode = 'none'
+    view.addChild(floating)
 
-    const scale = options.size / Math.max(texture.width, texture.height)
+    // Keep the click target stable while the image floats and reacts to presses.
+    view.hitArea = new Rectangle(-options.size / 2, -options.size / 2, options.size, options.size)
+    view.eventMode = 'static'
+    view.cursor = 'pointer'
 
-    ingredient.scale.set(scale)
+    createIngredientEffects({ view, floating, visual, size: options.size, id: options.id })
 
-    ingredient.eventMode = 'static'
-    ingredient.cursor = 'pointer'
-
-    ingredient.on('pointertap', () => {
+    view.on('pointertap', () => {
         options.onSelect(options.id)
     })
 
-    return ingredient
+    return view
 }
