@@ -1,3 +1,5 @@
+import { bindAudioControls } from '../audio/bindAudioControls'
+import { createAudio } from '../audio/createAudio'
 import { Application } from 'pixi.js'
 import type { Container, Ticker } from 'pixi.js'
 import { createGameScene } from '../game/scenes/createGameScene'
@@ -18,6 +20,9 @@ export async function createApp(root: HTMLElement) {
         autoDensity: true
     })
 
+    // The stage receives button taps during capture, including modal buttons.
+    app.stage.eventMode = 'static'
+
     root.appendChild(app.canvas)
 
     let activeView: Container | undefined
@@ -34,21 +39,23 @@ export async function createApp(root: HTMLElement) {
         resize()
     })
 
+    const audio = createAudio()
+    const unbindAudioControls = bindAudioControls(app.stage, app.canvas, audio)
     const bestScoreStore = createBestScoreStore()
 
     function showGame() {
-        sceneManager.show(() => createGameScene({ onExit: showMenu, recordScore: bestScoreStore.recordScore })).catch(console.error)
+        sceneManager.show(() => createGameScene({ onExit: showMenu, recordScore: bestScoreStore.recordScore, audio })).catch(console.error)
     }
 
     function showMenu() {
-        sceneManager.show(() => createMenuScene(showGame)).catch(console.error)
+        sceneManager.show(() => createMenuScene(showGame, audio)).catch(console.error)
     }
 
     function update(ticker: Ticker) {
         sceneManager.update(ticker.deltaMS)
     }
 
-    await sceneManager.show(() => createMenuScene(showGame))
+    await sceneManager.show(() => createMenuScene(showGame, audio))
 
     app.ticker.add(update)
     app.renderer.on('resize', resize)
@@ -58,6 +65,8 @@ export async function createApp(root: HTMLElement) {
             app.ticker.remove(update)
             app.renderer.off('resize', resize)
 
+            unbindAudioControls()
+            audio.destroy()
             sceneManager.destroy()
 
             app.destroy(true, { children: true })

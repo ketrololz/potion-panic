@@ -4,7 +4,7 @@ import { gsap } from 'gsap'
 import { createCauldronImpact } from './createCauldronImpact'
 import { SELECTION_FX as FX } from './constants/selection.constants'
 
-export function createSelectionEffects(liquid: Container) {
+export function createSelectionEffects(liquid: Container, onImpact: (recipeCompleted: boolean) => void) {
     const view = new Container()
     view.eventMode = 'none'
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -26,7 +26,7 @@ export function createSelectionEffects(liquid: Container) {
         return { layer, timeline }
     }
 
-    function success(source: PointData) {
+    function success(source: PointData, recipeCompleted = false) {
         const target = view.toLocal(liquid.getGlobalPosition())
         const { layer, timeline } = effect()
         const liquidBounds = liquid.getLocalBounds()
@@ -35,6 +35,7 @@ export function createSelectionEffects(liquid: Container) {
         const width = Math.hypot(right.x - left.x, right.y - left.y)
         const arrival = reducedMotion ? 0 : FX.travelDuration
         createCauldronImpact(layer, timeline, target, width, arrival, reducedMotion)
+        timeline.call(() => onImpact(recipeCompleted), [], arrival)
         if (reducedMotion) return
 
         const trail = new Graphics()

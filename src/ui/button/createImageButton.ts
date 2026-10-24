@@ -1,3 +1,4 @@
+import { AUDIO_BUTTON_LABEL } from '../../audio/constants/audio.constants'
 import { Assets, Container, Rectangle, Sprite, Text } from 'pixi.js'
 import { createButtonEffects } from './createButtonEffects'
 
@@ -12,6 +13,7 @@ interface ImageButtonOptions {
 
 export async function createImageButton({ text, textureUrl, width, fontSize, onPress, stopPropagation = false }: ImageButtonOptions) {
     const view = new Container()
+    view.label = AUDIO_BUTTON_LABEL
 
     const texture = await Assets.load(textureUrl)
     const background = new Sprite(texture)

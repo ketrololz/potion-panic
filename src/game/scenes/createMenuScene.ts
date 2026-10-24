@@ -1,3 +1,5 @@
+import type { GameAudio } from '../../audio/createAudio'
+import { createAudioToggle } from '../../ui/audio/createAudioToggle'
 import { createLogoEffects } from './menu/createLogoEffects'
 import { Assets, Container, Graphics, Sprite } from 'pixi.js'
 import type { Scene } from './types/gameScene.types'
@@ -7,7 +9,8 @@ import { applyMenuLayout } from '../layout/applyMenuLayout'
 import { createImageButton } from '../../ui/button/createImageButton'
 import { createRulesPanel } from '../../ui/rules/createRulesPanel'
 
-export async function createMenuScene(onStart: () => void): Promise<Scene> {
+export async function createMenuScene(onStart: () => void, audio: GameAudio): Promise<Scene> {
+    audio.setMusic('menu')
     const view = new Container()
 
     const [backgroundTexture, logoTexture] = await Promise.all([Assets.load('/assets/backgrounds/lab.webp'), Assets.load('/assets/menu/logo.webp')])
@@ -53,6 +56,12 @@ export async function createMenuScene(onStart: () => void): Promise<Scene> {
         rulesPanel: rulesPanel.view
     })
 
+    const [musicToggle, effectsToggle] = await Promise.all([createAudioToggle(audio, 'music'), createAudioToggle(audio, 'effects')])
+    musicToggle.position.set(MENU_LAYOUT.audio.musicX, MENU_LAYOUT.audio.centerY)
+    effectsToggle.position.set(MENU_LAYOUT.audio.effectsX, MENU_LAYOUT.audio.centerY)
+    view.addChild(musicToggle, effectsToggle)
+    // Modals must remain above the sound control.
+    view.setChildIndex(rulesPanel.view, view.children.length - 1)
     const logoEffects = createLogoEffects(logo)
 
     return {

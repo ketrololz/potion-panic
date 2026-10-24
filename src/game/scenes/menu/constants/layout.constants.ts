@@ -1,4 +1,5 @@
 export const MENU_LAYOUT = {
+    audio: { musicX: 850, effectsX: 980, centerY: 120 },
     logo: {
         width: 900,
         centerY: 760

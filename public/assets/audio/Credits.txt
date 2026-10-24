@@ -1,0 +1,26 @@
+Third-party audio — CC0 1.0
+https://creativecommons.org/publicdomain/zero/1.0/
+
+ingredient.ogg: drop_002.ogg
+error.ogg: error_001.ogg
+Interface Sounds by Kenney
+https://kenney.nl/assets/interface-sounds
+Original license: Kenney-License.txt
+M4A files are AAC conversions of the corresponding OGG originals.
+
+menu.ogg: Cave Theme by Brandon75689 (submitted by HaelDB)
+https://opengameart.org/node/3922
+Selected license: CC0 (one of the licenses offered on the source page).
+
+game-magic.mp3: Magic Town by controllerhead
+https://opengameart.org/content/magic-town
+License: CC0.
+
+User-supplied audio (licenses not specified here)
+button_click.mp3: new_audio/button_click.mp3
+recipe.wav: new_audio/recipe.wav
+woosh.wav: new_audio/woosh.wav
+water_drop.ogg: new_audio/water_drop.ogg (M4A is its AAC conversion)
+brewing.m4a: AAC conversion of new_audio/brewing_potion.flac
+fire.m4a: AAC conversion of new_audio/fire.wav
+result-new.m4a: AAC conversion of new_audio/result.aiff

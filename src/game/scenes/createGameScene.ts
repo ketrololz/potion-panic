@@ -19,7 +19,8 @@ import { INGREDIENTS_NAME } from '../objects/ingredients/constants/ingredinents.
 import { createPausePanel } from '../../ui/pause/createPausePanel'
 import type { ResultData } from '../../ui/result/types/result.types'
 
-export async function createGameScene({ onExit, recordScore }: GameSceneOptions): Promise<Scene> {
+export async function createGameScene({ onExit, recordScore, audio }: GameSceneOptions): Promise<Scene> {
+    audio.setMusic('game')
     const viewport = new Container()
     const scene = new Container()
     viewport.addChild(scene)
@@ -46,7 +47,7 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
 
     const liquid = cauldron.getChildByLabel('liquid')
     if (!liquid) throw new Error('Не найден слой жидкости котла')
-    const selectionEffects = createSelectionEffects(liquid)
+    const selectionEffects = createSelectionEffects(liquid, audio.playImpact)
 
     const ingredients = await createIngredientGroup((id) => {
         const previousState = session.getState()
@@ -55,11 +56,13 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
         if (outcome !== 'inactive') {
             const source = ingredients.getIngredientPosition(id, selectionEffects.view)
             if (outcome === 'wrong') {
+                audio.play('error')
                 selectionEffects.error(source)
                 screenShake.play()
                 hud.showTimePenalty(SESSION_RULES.mistakeTimePenaltyMs)
             } else {
-                selectionEffects.success(source)
+                audio.play(outcome === 'completed' ? 'recipe' : 'ingredient')
+                selectionEffects.success(source, outcome === 'completed')
             }
         }
 
@@ -163,6 +166,7 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
         const state = session.getState()
 
         hud.setPaused(state.status === 'paused')
+        audio.setPaused(state.status !== 'playing')
         ingredients.setEnabled(state.status === 'playing')
         selectionEffects.setPaused(state.status !== 'playing')
         screenShake.setPaused(state.status === 'paused')
@@ -172,6 +176,7 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
 
         if (state.status === 'finished') {
             if (finalResult === undefined) {
+                audio.play('result')
                 finalResult = {
                     score: state.score,
                     bestScore: recordScore(state.score)

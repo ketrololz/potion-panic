@@ -1,9 +1,11 @@
+import { AUDIO_BUTTON_LABEL } from '../../audio/constants/audio.constants'
 import { Assets, Circle, Container, Sprite } from 'pixi.js'
 import { PAUSE_BUTTON_STYLE as STYLE } from './constants/layout.constants'
 import { createButtonEffects } from '../button/createButtonEffects'
 
 export async function createPauseButton(onPress: () => void) {
     const view = new Container()
+    view.label = AUDIO_BUTTON_LABEL
 
     const [backgroundTexture, iconTexture] = await Promise.all([
         Assets.load('/assets/ui/buttons/button-round.webp'),

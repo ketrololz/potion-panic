@@ -1,3 +1,4 @@
+import type { GameAudio } from '../../../audio/createAudio'
 import type { Container } from 'pixi.js'
 
 export interface Scene {
@@ -7,6 +8,7 @@ export interface Scene {
 }
 
 export interface GameSceneOptions {
+    audio: GameAudio
     onExit: () => void
     recordScore: (score: number) => number
 }
