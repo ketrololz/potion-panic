@@ -41,6 +41,7 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
         session.selectIngredient(id)
 
         syncPanels()
+        syncStatus()
     })
     scene.addChild(ingredients)
 

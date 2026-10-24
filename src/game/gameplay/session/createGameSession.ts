@@ -21,6 +21,12 @@ export function createGameSession(availableIngredients: readonly string[]) {
         recipeProgress = createRecipeProgress(recipe)
     }
 
+    function subtractTime(deltaMs: number) {
+        remainingMs = Math.max(0, remainingMs - deltaMs)
+
+        if (remainingMs === 0) status = 'finished'
+    }
+
     function getState() {
         return {
             ...recipeProgress.getProgress(),
@@ -45,11 +51,13 @@ export function createGameSession(availableIngredients: readonly string[]) {
         if (outcome === 'wrong') {
             combo = 0
             recipeProgress.reset()
+            subtractTime(SESSION_RULES.mistakeTimePenaltyMs)
         }
 
         if (outcome === 'completed') {
             combo = Math.min(combo + 1, SESSION_RULES.maxCombo)
             score += SESSION_RULES.pointsPerRecipe * combo
+            remainingMs += SESSION_RULES.recipeTimeBonusMs
 
             startNewRecipe()
         }
@@ -63,9 +71,7 @@ export function createGameSession(availableIngredients: readonly string[]) {
     function update(deltaMs: number) {
         if (status !== 'playing' || deltaMs <= 0) return
 
-        remainingMs = Math.max(0, remainingMs - deltaMs)
-
-        if (remainingMs === 0) status = 'finished'
+        subtractTime(deltaMs)
     }
 
     function pause() {
