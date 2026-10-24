@@ -1,11 +1,15 @@
-import { Assets, Container, Graphics, Sprite, Text, Texture } from 'pixi.js'
+import { Assets, Container, Sprite, Text, Texture } from 'pixi.js'
+import { gsap } from 'gsap'
+import { RECIPE_FOCUS } from './constants/effects.constants'
 import { RECIPE_LAYOUT } from './constants/layout.constants'
+import { createRecipeFocus } from './createRecipeFocus'
 import { INGREDIENTS } from '../../game/objects/ingredients/constants/ingredinents.constants'
 
 export async function createRecipePanel(recipe: readonly string[]) {
     const view = new Container()
 
     view.eventMode = 'none'
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const panelTexture = await Assets.load('/assets/ui/recipe/recipe-panel.webp')
 
@@ -55,11 +59,6 @@ export async function createRecipePanel(recipe: readonly string[]) {
 
         icon.anchor.set(0.5)
 
-        const highlight = new Graphics().circle(0, 0, RECIPE_LAYOUT.highlightRadius).stroke({
-            color: RECIPE_LAYOUT.highlightColor,
-            width: RECIPE_LAYOUT.highlightWidth
-        })
-
         const arrow = new Text({
             text: RECIPE_LAYOUT.arrow.text,
             style: {
@@ -71,31 +70,54 @@ export async function createRecipePanel(recipe: readonly string[]) {
 
         arrow.anchor.set(0.5)
 
-        return { icon, highlight, arrow }
+        const visual = new Container()
+        visual.addChild(icon)
+
+        return { icon, arrow, visual, active: false, scaleTween: undefined as gsap.core.Tween | undefined }
     })
 
     const rowWidth = (items.length - 1) * RECIPE_LAYOUT.iconStep
 
-    items.forEach(({ icon, highlight, arrow }, index) => {
+    const focus = createRecipeFocus()
+    view.addChild(focus.view)
+
+    items.forEach(({ visual, arrow }, index) => {
         const x = index * RECIPE_LAYOUT.iconStep - rowWidth / 2
 
-        icon.position.set(x, RECIPE_LAYOUT.rowY)
-        highlight.position.set(x, RECIPE_LAYOUT.rowY)
+        visual.position.set(x, RECIPE_LAYOUT.rowY)
 
         if (index < items.length - 1) {
             arrow.position.set(x + RECIPE_LAYOUT.iconStep / 2, RECIPE_LAYOUT.rowY)
             view.addChild(arrow)
         }
 
-        view.addChild(highlight, icon)
+        view.addChild(visual)
     })
 
     function setProgress(currentStep: number) {
-        items.forEach(({ icon, highlight }, index) => {
-            highlight.visible = index === currentStep
+        items.forEach((item, index) => {
+            item.icon.alpha = index < currentStep ? RECIPE_LAYOUT.completedAlpha : 1
 
-            icon.alpha = index < currentStep ? RECIPE_LAYOUT.completedAlpha : 1
+            const active = index === currentStep
+            if (item.active === active) return
+
+            item.active = active
+            item.scaleTween?.kill()
+            const scale = active ? RECIPE_FOCUS.activeIconScale : 1
+            item.scaleTween = gsap.to(item.visual.scale, {
+                x: scale,
+                y: scale,
+                duration: reducedMotion ? 0 : RECIPE_FOCUS.iconScaleDuration,
+                ease: 'power2.out'
+            })
         })
+
+        const activeItem = items[currentStep]
+        if (activeItem) {
+            focus.setPosition(activeItem.visual.x, activeItem.visual.y)
+        } else {
+            focus.hide()
+        }
     }
 
     let currentRecipe: readonly string[] = []
@@ -129,6 +151,10 @@ export async function createRecipePanel(recipe: readonly string[]) {
 
         currentRecipe = [...nextRecipe]
     }
+
+    view.once('destroyed', () => {
+        items.forEach((item) => item.scaleTween?.kill())
+    })
 
     setRecipe(recipe)
     setProgress(0)

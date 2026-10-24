@@ -1,0 +1,23 @@
+export const RECIPE_FOCUS = {
+    activeIconScale: 1.12,
+    iconScaleDuration: 0.28,
+    radius: 76,
+    innerRadius: 65,
+    haloRadius: 53,
+    haloColor: 0x6536dc,
+    haloAlpha: 0.45,
+    haloBlur: 16,
+    arcColor: 0xffdb92,
+    accentColor: 0x78fff0,
+    arcWidth: 2,
+    arcCount: 3,
+    arcLength: Math.PI * 0.42,
+    orbitRadius: 82,
+    orbitCount: 4,
+    sparkSize: 4,
+    rotationDuration: 12,
+    counterRotationDuration: 18,
+    pulseDuration: 1.6,
+    moveDuration: 0.28,
+    appearDuration: 0.4
+} as const
