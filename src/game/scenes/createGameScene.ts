@@ -1,7 +1,9 @@
+import { createCauldronFire } from '../objects/cauldron/createCauldronFire'
 import { Assets, Container, Graphics, Sprite } from 'pixi.js'
 import { createScreenShake } from '../effects/shake/createScreenShake'
 import { createSelectionEffects } from '../effects/selection/createSelectionEffects'
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants/config/config.constants'
+import { createBrewingEffects } from '../objects/cauldron/createBrewingEffects'
 import { createCauldron } from '../objects/cauldron/createCauldron'
 import { createIngredientGroup } from '../objects/ingredients/ingredientGroup/createIngredientGroup'
 import { createRecipePanel } from '../../ui/recipe/createRecipePanel'
@@ -113,7 +115,14 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
         pausePanel: pausePanel.view
     })
 
+    const brewing = createBrewingEffects(cauldron, liquid)
+    const fire = createCauldronFire(cauldron)
+
     function update(deltaMs: number) {
+        if (session.getState().status === 'playing') {
+            brewing.update(deltaMs)
+            fire.update(deltaMs)
+        }
         session.update(deltaMs)
 
         hud.setTime(session.getState().remainingMs)
@@ -135,6 +144,8 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
         finalResult = undefined
 
         session.restart()
+        brewing.reset()
+        fire.reset()
         ingredients.reset()
         selectionEffects.clear()
         screenShake.clear()

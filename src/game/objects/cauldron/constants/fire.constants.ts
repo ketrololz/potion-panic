@@ -1,0 +1,20 @@
+export const FIRE_FX = {
+    textureSize: 128,
+    animationSpeed: 0.75,
+    opacity: 0.75,
+    flameCount: 48,
+    widthRatio: 0.75,
+    heightRatio: 0.2,
+    baseFromBottomRatio: 0.018,
+    flameWidthRatio: 0.085,
+    flameDuration: 1.15,
+    flameAlpha: 0.4,
+    outerColor: 0xff420c,
+    middleColor: 0xff8c18,
+    coreColor: 0xffdf83,
+    emberCount: 60,
+    emberDuration: 2.1,
+    emberRiseRatio: 0.35,
+    flickerSpeed: 5,
+    maxDeltaMs: 50
+} as const
