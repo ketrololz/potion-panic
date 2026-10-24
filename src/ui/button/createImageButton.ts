@@ -1,4 +1,5 @@
 import { Assets, Container, Rectangle, Sprite, Text } from 'pixi.js'
+import { createButtonEffects } from './createButtonEffects'
 
 interface ImageButtonOptions {
     text: string
@@ -29,7 +30,12 @@ export async function createImageButton({ text, textureUrl, width, fontSize, onP
 
     label.anchor.set(0.5)
 
-    view.addChild(background, label)
+    const content = new Container()
+    content.eventMode = 'none'
+    content.addChild(background, label)
+    view.addChild(content)
+
+    createButtonEffects({ view, content, background })
 
     view.hitArea = new Rectangle(-background.width / 2, -background.height / 2, background.width, background.height)
 

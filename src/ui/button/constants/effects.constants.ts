@@ -1,0 +1,22 @@
+export const BUTTON_EFFECTS = {
+    hoverScale: 1.025,
+    pressedScale: 0.965,
+    liftRatio: 0.025,
+    hoverDuration: 0.24,
+    pressDuration: 0.09,
+    releaseDuration: 0.38,
+    glowColor: 0xffc66d,
+    glowAlpha: 0.55,
+    glowBlurRatio: 0.08,
+    glowScale: 1.035,
+    sheenColor: 0xffedbf,
+    sheenAlpha: 0.05,
+    sheenWidthRatio: 0.16,
+    sheenDuration: 0.85,
+    sheenRepeatDelay: 1.8,
+    sparkCount: 6,
+    sparkColor: 0xffdf99,
+    sparkSizeRatio: 0.024,
+    sparkDuration: 1.1,
+    sparkStagger: 0.15
+} as const
