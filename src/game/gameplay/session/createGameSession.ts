@@ -48,9 +48,8 @@ export function createGameSession(availableIngredients: readonly string[]) {
         }
 
         if (outcome === 'completed') {
-            score += SESSION_RULES.pointsPerRecipe
-
-            if (combo < SESSION_RULES.maxCombo) combo += 1
+            combo = Math.min(combo + 1, SESSION_RULES.maxCombo)
+            score += SESSION_RULES.pointsPerRecipe * combo
 
             startNewRecipe()
         }
