@@ -49,19 +49,24 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
     const selectionEffects = createSelectionEffects(liquid)
 
     const ingredients = await createIngredientGroup((id) => {
-        const { outcome } = session.selectIngredient(id)
+        const previousState = session.getState()
+        const { outcome, state } = session.selectIngredient(id)
 
         if (outcome !== 'inactive') {
             const source = ingredients.getIngredientPosition(id, selectionEffects.view)
             if (outcome === 'wrong') {
                 selectionEffects.error(source)
                 screenShake.play()
+                hud.showTimePenalty(SESSION_RULES.mistakeTimePenaltyMs)
             } else {
                 selectionEffects.success(source)
             }
         }
 
-        if (outcome === 'completed') ingredients.shuffle()
+        if (outcome === 'completed') {
+            ingredients.shuffle()
+            hud.showReward(state.score - previousState.score, state.remainingMs - previousState.remainingMs)
+        }
 
         syncPanels()
         syncStatus()
@@ -143,6 +148,7 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
     function restartGame() {
         finalResult = undefined
 
+        hud.clearEffects()
         session.restart()
         brewing.reset()
         fire.reset()
@@ -156,6 +162,7 @@ export async function createGameScene({ onExit, recordScore }: GameSceneOptions)
     function syncStatus() {
         const state = session.getState()
 
+        hud.setPaused(state.status === 'paused')
         ingredients.setEnabled(state.status === 'playing')
         selectionEffects.setPaused(state.status !== 'playing')
         screenShake.setPaused(state.status === 'paused')

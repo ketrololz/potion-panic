@@ -1,3 +1,5 @@
+import { createHudRewardEffect } from './createHudRewardEffect'
+import { HUD_REWARD_FX } from './constants/reward.constants'
 import { Assets, Container, Sprite } from 'pixi.js'
 import { createScorePanel } from '../score/createScorePanel'
 import { createTimerPanel } from '../timer/createTimerPanel'
@@ -41,7 +43,28 @@ export async function createHud({ score, remainingMs }: HudOptions) {
 
     view.addChild(panel, star, scorePanel.view, hourglass, timerPanel.view)
 
+    const scoreReward = createHudRewardEffect(view, scorePanel.view, HUD_REWARD_FX.scoreColor)
+    const timeReward = createHudRewardEffect(view, timerPanel.view, HUD_REWARD_FX.timeColor)
+
+    function showReward(scoreDelta: number, timeDeltaMs: number) {
+        if (scoreDelta > 0) scoreReward.play(`+${scoreDelta}`)
+        if (timeDeltaMs > 0) timeReward.play(`+${Number((timeDeltaMs / 1000).toFixed(2))} сек`)
+    }
+
     return {
+        showReward,
+        showTimePenalty(penaltyMs: number) {
+            if (penaltyMs <= 0) return
+            timeReward.play(`−${Number((penaltyMs / 1000).toFixed(2))} сек`, HUD_REWARD_FX.penaltyColor, HUD_REWARD_FX.penaltyStartY)
+        },
+        clearEffects() {
+            scoreReward.clear()
+            timeReward.clear()
+        },
+        setPaused(value: boolean) {
+            scoreReward.setPaused(value)
+            timeReward.setPaused(value)
+        },
         view,
         setScore: scorePanel.setScore,
         setTime: timerPanel.setTime
