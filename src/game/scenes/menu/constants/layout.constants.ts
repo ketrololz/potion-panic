@@ -10,7 +10,7 @@ export const MENU_LAYOUT = {
     },
     rulesButton: {
         width: 820,
-        centerY: 1550,
+        centerY: 1520,
         fontSize: 48
     }
 } as const

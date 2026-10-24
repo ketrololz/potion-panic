@@ -1,3 +1,4 @@
+import { createLogoEffects } from './menu/createLogoEffects'
 import { Assets, Container, Graphics, Sprite } from 'pixi.js'
 import type { Scene } from './types/gameScene.types'
 import { GAME_WIDTH, GAME_HEIGHT } from '../constants/config/config.constants'
@@ -52,8 +53,11 @@ export async function createMenuScene(onStart: () => void): Promise<Scene> {
         rulesPanel: rulesPanel.view
     })
 
+    const logoEffects = createLogoEffects(logo)
+
     return {
         view,
+        update: logoEffects.update,
         destroy() {
             view.destroy({ children: true })
         }
