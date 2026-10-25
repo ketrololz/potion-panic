@@ -1,3 +1,4 @@
+import { createResultAnimation } from './createResultAnimation'
 import { Container, Graphics, Rectangle, Text } from 'pixi.js'
 import type { ResultData, ResultPanelOptions } from './types/result.types'
 import { RESULT_LAYOUT as LAYOUT } from './constants/layout.constants'
@@ -37,7 +38,7 @@ export async function createResultPanel({ screenWidth, screenHeight, onRestart, 
         return label
     }
 
-    const title = createLabel('ВРЕМЯ ВЫШЛО', LAYOUT.titleY, LAYOUT.titleFontSize)
+    const title = createLabel('ИТОГИ РАУНДА', LAYOUT.titleY, LAYOUT.titleFontSize)
 
     const scoreLabel = createLabel('', LAYOUT.scoreY, LAYOUT.scoreFontSize)
     const bestScoreLabel = createLabel('', LAYOUT.bestScoreY, LAYOUT.bestScoreFontSize)
@@ -64,7 +65,10 @@ export async function createResultPanel({ screenWidth, screenHeight, onRestart, 
 
     menuButton.position.set(0, LAYOUT.menuButtonY)
 
-    view.addChild(backdrop, panel, title, scoreLabel, bestScoreLabel, restartButton, menuButton)
+    const content = new Container()
+    content.addChild(panel, title, scoreLabel, bestScoreLabel, restartButton, menuButton)
+    view.addChild(backdrop, content)
+    const animation = createResultAnimation({ view, backdrop, content, scoreLabel, buttons: [restartButton, menuButton] })
 
     function show({ score, bestScore }: ResultData) {
         if (view.visible) return
@@ -72,9 +76,12 @@ export async function createResultPanel({ screenWidth, screenHeight, onRestart, 
         scoreLabel.text = `Очки: ${score}`
         bestScoreLabel.text = `Рекорд: ${bestScore}`
         view.visible = true
+        animation.play({ score, bestScore })
     }
 
     function hide() {
+        if (!view.visible) return
+        animation.clear()
         view.visible = false
     }
 

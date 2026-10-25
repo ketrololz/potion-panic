@@ -55,7 +55,7 @@ export async function createIngredientGroup(onSelect: (id: string) => void) {
                 const { x, y } = positionFor(index)
                 item.position.set(x, y)
             })
-            return
+            return true
         }
 
         shuffling = true
@@ -77,6 +77,7 @@ export async function createIngredientGroup(onSelect: (id: string) => void) {
                 index * GROUP_SHUFFLE.stagger
             )
         })
+        return true
     }
 
     function setEnabled(value: boolean) {

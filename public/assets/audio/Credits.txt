@@ -23,4 +23,6 @@ woosh.wav: new_audio/woosh.wav
 water_drop.ogg: new_audio/water_drop.ogg (M4A is its AAC conversion)
 brewing.m4a: AAC conversion of new_audio/brewing_potion.flac
 fire.m4a: AAC conversion of new_audio/fire.wav
-result-new.m4a: AAC conversion of new_audio/result.aiff
+result.m4a: AAC conversion of new_audio/result.flac
+
+swoosh.wav: user-supplied new_audio/swoosh.wav (ingredient shuffle). License not specified here.

@@ -67,7 +67,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
         }
 
         if (outcome === 'completed') {
-            ingredients.shuffle()
+            if (ingredients.shuffle()) audio.play('shuffle')
             hud.showReward(state.score - previousState.score, state.remainingMs - previousState.remainingMs)
         }
 
@@ -177,6 +177,8 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
         if (state.status === 'finished') {
             if (finalResult === undefined) {
                 audio.play('result')
+                screenShake.clear()
+                selectionEffects.clear()
                 finalResult = {
                     score: state.score,
                     bestScore: recordScore(state.score)

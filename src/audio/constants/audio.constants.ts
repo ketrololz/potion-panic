@@ -1,4 +1,4 @@
-export type SoundId = 'click' | 'ingredient' | 'recipe' | 'error' | 'result' | 'impact' | 'brewing' | 'hover'
+export type SoundId = 'click' | 'ingredient' | 'recipe' | 'error' | 'result' | 'impact' | 'brewing' | 'hover' | 'shuffle'
 export type AmbientId = 'fire'
 export type MusicId = 'menu' | 'game'
 
@@ -13,7 +13,8 @@ export const AUDIO_SOURCES: Record<SoundId | MusicId | AmbientId, string[]> = {
     recipe: ['/assets/audio/recipe.wav'],
     impact: ['/assets/audio/water_drop.ogg', '/assets/audio/water_drop.m4a'],
     error: ['/assets/audio/error.ogg', '/assets/audio/error.m4a'],
-    result: ['/assets/audio/result-new.m4a']
+    result: ['/assets/audio/result.m4a'],
+    shuffle: ['/assets/audio/swoosh.wav']
 }
 
 export const AUDIO_SETTINGS = {
@@ -36,6 +37,7 @@ export const AUDIO_VOLUMES: Record<SoundId | MusicId | AmbientId, number> = {
     brewing: 0.45,
     error: 0.65,
     result: 0.65,
+    shuffle: 0.45,
     hover: 0.15,
     fire: 0.05
 }
