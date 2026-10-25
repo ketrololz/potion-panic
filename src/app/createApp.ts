@@ -1,3 +1,6 @@
+import { loadSceneAssets, waitForPaint } from './loading/loadSceneAssets'
+import type { SceneName } from './loading/assets.constants'
+import type { LoadingScreen } from '../ui/loading/createLoadingScreen'
 import { bindAudioControls } from '../audio/bindAudioControls'
 import { createAudio } from '../audio/createAudio'
 import { Application } from 'pixi.js'
@@ -9,7 +12,7 @@ import { createSceneManager } from './createSceneManager'
 import { createMenuScene } from '../game/scenes/createMenuScene'
 import { createBestScoreStore } from '../game/progress/createBestScoreStore'
 
-export async function createApp(root: HTMLElement) {
+export async function createApp(root: HTMLElement, loading: LoadingScreen) {
     const app = new Application()
 
     await app.init({
@@ -37,33 +40,60 @@ export async function createApp(root: HTMLElement) {
         activeView = scene.view
 
         resize()
+        app.stage.interactiveChildren = true
+        loading.hide()
     })
 
     const audio = createAudio()
     const unbindAudioControls = bindAudioControls(app.stage, app.canvas, audio)
     const bestScoreStore = createBestScoreStore()
 
-    function showGame() {
-        sceneManager
-            .show(() => createGameScene({ onExit: showMenu, recordScore: bestScoreStore.recordScore, getBestScore: bestScoreStore.getBestScore, audio }))
-            .catch(console.error)
+    let destroyed = false
+    let loadVersion = 0
+
+    async function showScene(name: SceneName) {
+        try {
+            await sceneManager.show(async () => {
+                const version = ++loadVersion
+                loading.show(name === 'menu' ? 'Пробуждаем магическую лабораторию…' : 'Готовим котёл и ингредиенты…')
+                app.stage.interactiveChildren = false
+                await waitForPaint()
+                await loadSceneAssets(name, audio, (progress) => {
+                    if (!destroyed && version === loadVersion) loading.setProgress(progress * 0.95)
+                })
+                if (destroyed) throw new Error('Application destroyed during loading')
+                return name === 'menu'
+                    ? createMenuScene(showGame, audio)
+                    : createGameScene({ onExit: showMenu, recordScore: bestScoreStore.recordScore, getBestScore: bestScoreStore.getBestScore, audio })
+            })
+        } catch (error) {
+            if (destroyed) return
+            console.error(error)
+            loading.fail(() => {
+                void showScene(name)
+            })
+        }
     }
 
+    function showGame() {
+        void showScene('game')
+    }
     function showMenu() {
-        sceneManager.show(() => createMenuScene(showGame, audio)).catch(console.error)
+        void showScene('menu')
     }
 
     function update(ticker: Ticker) {
         sceneManager.update(ticker.deltaMS)
     }
 
-    await sceneManager.show(() => createMenuScene(showGame, audio))
-
     app.ticker.add(update)
     app.renderer.on('resize', resize)
+    showMenu()
 
     return {
         destroy() {
+            destroyed = true
+            loading.hide()
             app.ticker.remove(update)
             app.renderer.off('resize', resize)
 

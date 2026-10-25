@@ -8,6 +8,8 @@ type AudioId = SoundId | MusicId | AmbientId
 
 export function createAudio() {
     const sounds = new Map<AudioId, Howl>()
+    const cancelLoads = new Set<() => void>()
+    const pendingLoads = new Map<AudioId, Promise<void>>()
     const voices = new Map<AudioId, number>()
     const lastPlayed = new Map<SoundId, number>()
     let musicMuted = readAudioMuted('music')
@@ -36,7 +38,7 @@ export function createAudio() {
         const sound = new Howl({
             src: AUDIO_SOURCES[id],
             loop: isLoop(id),
-            preload: true,
+            preload: false,
             volume: AUDIO_VOLUMES[id],
             pool: SETTINGS.reusePoolSize,
             onload: () => {
@@ -126,9 +128,41 @@ export function createAudio() {
         syncLoops()
     }
     document.addEventListener('visibilitychange', visibilityChanged)
-    for (const id of Object.keys(AUDIO_SOURCES) as AudioId[]) getSound(id)
+    function loadSound(id: AudioId): Promise<void> {
+        if (destroyed) return Promise.resolve()
+        const sound = getSound(id)
+        if (sound.state() === 'loaded') return Promise.resolve()
+        const pending = pendingLoads.get(id)
+        if (pending) return pending
+        const promise = new Promise<void>((resolve) => {
+            function complete() {
+                cancelLoads.delete(complete)
+                sound.off('load', complete)
+                sound.off('loaderror', complete)
+                resolve()
+            }
+            cancelLoads.add(complete)
+            sound.once('load', complete)
+            sound.once('loaderror', complete)
+            sound.load()
+        })
+        pendingLoads.set(id, promise)
+        void promise.then(() => pendingLoads.delete(id))
+        return promise
+    }
 
     return {
+        async load(ids: readonly AudioId[], onProgress: (value: number) => void) {
+            const unique = [...new Set(ids)]
+            let loaded = 0
+            if (!unique.length) onProgress(1)
+            await Promise.all(
+                unique.map(async (id) => {
+                    await loadSound(id)
+                    onProgress(++loaded / unique.length)
+                })
+            )
+        },
         play,
         playImpact,
         setCounting(value: boolean) {
@@ -197,6 +231,8 @@ export function createAudio() {
             if (destroyed) return
             resetHover()
             destroyed = true
+            for (const cancel of cancelLoads) cancel()
+            pendingLoads.clear()
             document.removeEventListener('visibilitychange', visibilityChanged)
             for (const sound of sounds.values()) sound.unload()
             sounds.clear()

@@ -1,0 +1,102 @@
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    box-sizing: border-box;
+    color: #fff3dc;
+    background: radial-gradient(ellipse at 50% 40%, #352044 0%, #160d21 65%);
+    font-family: Georgia, serif;
+}
+
+.loading-screen[hidden],
+.loading-screen [hidden] {
+    display: none;
+}
+
+.loading-screen__content {
+    width: min(100%, 340px);
+    text-align: center;
+}
+
+.loading-screen__logo {
+    display: block;
+    width: min(100%, 300px, 45vh);
+    height: auto;
+    margin: 0 auto 28px;
+    filter: drop-shadow(0 0 14px #a94dff40);
+    animation: loading-glow 2.4s ease-in-out infinite alternate;
+}
+
+.loading-screen p {
+    min-height: 42px;
+    margin: 0 0 20px;
+    line-height: 1.5;
+    font-size: 16px;
+}
+
+.loading-screen progress {
+    display: block;
+    width: 100%;
+    height: 12px;
+    overflow: hidden;
+    border: 1px solid #ffd16680;
+    border-radius: 10px;
+    appearance: none;
+    background: #10091b;
+}
+
+.loading-screen progress::-webkit-progress-bar {
+    background: #10091b;
+}
+
+.loading-screen progress::-webkit-progress-value {
+    border-radius: 10px;
+    background: linear-gradient(90deg, #1a9e99, #83ffe1);
+    transition: width 0.15s ease-out;
+}
+
+.loading-screen progress::-moz-progress-bar {
+    border-radius: 10px;
+    background: linear-gradient(90deg, #1a9e99, #83ffe1);
+}
+
+.loading-screen__percentage {
+    display: block;
+    margin-top: 12px;
+    color: #ffd166;
+    font-variant-numeric: tabular-nums;
+}
+
+.loading-screen button {
+    margin-top: 24px;
+    padding: 12px 28px;
+    border: 1px solid #ffd166;
+    border-radius: 8px;
+    color: #fff3dc;
+    background: #352044;
+    font: inherit;
+    cursor: pointer;
+}
+
+.loading-screen--error .loading-screen__logo {
+    animation: none;
+}
+
+@keyframes loading-glow {
+    to {
+        filter: drop-shadow(0 0 28px #a94dff80);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-screen__logo {
+        animation: none;
+    }
+
+    .loading-screen progress::-webkit-progress-value {
+        transition: none;
+    }
+}

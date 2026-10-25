@@ -1,15 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
     <head>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#160d21" />
         <meta name="color-scheme" content="dark" />
+        <link rel="stylesheet" href="/src/ui/loading/loading.css" />
         <title>potion-panic</title>
     </head>
     <body>
         <div id="app"></div>
+        <div id="loading-screen" class="loading-screen" role="status" aria-live="polite">
+            <div class="loading-screen__content">
+                <img class="loading-screen__logo" src="/assets/menu/logo.webp" alt="Potion Panic" width="1069" height="935" fetchpriority="high" />
+                <p data-loading-label>Пробуждаем магическую лабораторию…</p>
+                <progress max="1" value="0" aria-label="Загрузка ресурсов"></progress>
+                <span class="loading-screen__percentage" data-loading-percentage aria-hidden="true">0%</span>
+                <button type="button" hidden>Попробовать ещё раз</button>
+            </div>
+        </div>
         <script type="module" src="/src/main.ts"></script>
     </body>
 </html>

@@ -33,7 +33,7 @@ export function createSceneManager(host: Container, onChange: (scene: Scene) => 
     }
 
     function update(deltaMs: number) {
-        activeScene?.update?.(deltaMs)
+        if (!switching) activeScene?.update?.(deltaMs)
     }
 
     function destroy() {
