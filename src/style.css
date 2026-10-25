@@ -6,6 +6,10 @@ body,
     margin: 0;
 }
 
+html {
+    background: #160d21 url('/assets/backgrounds/wall.webp') center / cover no-repeat;
+}
+
 body {
     overflow: hidden;
 }

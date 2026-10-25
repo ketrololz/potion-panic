@@ -14,7 +14,7 @@ export async function createApp(root: HTMLElement) {
 
     await app.init({
         resizeTo: root,
-        background: '#160d20',
+        backgroundAlpha: 0,
         antialias: true,
         resolution: Math.min(window.devicePixelRatio || 1, 2),
         autoDensity: true
