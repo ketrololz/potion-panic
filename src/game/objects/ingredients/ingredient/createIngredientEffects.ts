@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../../../shared/prefersReducedMotion'
 import { Container, Graphics } from 'pixi.js'
 import type { FederatedPointerEvent } from 'pixi.js'
 import { gsap } from 'gsap'
@@ -35,7 +36,7 @@ function createSpark(size: number, color: number) {
 }
 
 export function createIngredientEffects({ view, floating, visual, size, id }: IngredientEffectsOptions) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const seed = ([...id].reduce((value, char) => value + char.charCodeAt(0), 0) % 17) / 17
     let hovered = false
     let feedback: gsap.core.Tween | undefined

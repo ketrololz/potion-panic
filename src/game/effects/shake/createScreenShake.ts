@@ -1,10 +1,11 @@
+import { prefersReducedMotion } from '../../../shared/prefersReducedMotion'
 import type { Container } from 'pixi.js'
 import { gsap } from 'gsap'
 
 const SHAKE = { duration: 0.34, horizontal: 11, vertical: 6, oscillations: 4 } as const
 
 export function createScreenShake(target: Container) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     let animation: gsap.core.Tween | undefined
 
     function clear() {

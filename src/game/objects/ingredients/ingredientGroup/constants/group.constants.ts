@@ -1,4 +1,4 @@
-export const GROUP_LAYOT = {
+export const GROUP_LAYOUT = {
     columns: 3,
     itemSize: 200,
     columnStep: 300,

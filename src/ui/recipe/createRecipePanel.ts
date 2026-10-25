@@ -1,15 +1,16 @@
+import { prefersReducedMotion } from '../../shared/prefersReducedMotion'
 import { Assets, Container, Sprite, Text, Texture } from 'pixi.js'
 import { gsap } from 'gsap'
 import { RECIPE_FOCUS } from './constants/effects.constants'
 import { RECIPE_LAYOUT } from './constants/layout.constants'
 import { createRecipeFocus } from './createRecipeFocus'
-import { INGREDIENTS } from '../../game/objects/ingredients/constants/ingredinents.constants'
+import { INGREDIENTS } from '../../game/objects/ingredients/constants/ingredients.constants'
 
 export async function createRecipePanel(recipe: readonly string[]) {
     const view = new Container()
 
     view.eventMode = 'none'
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
 
     const panelTexture = await Assets.load('/assets/ui/recipe/recipe-panel.webp')
 
@@ -54,21 +55,24 @@ export async function createRecipePanel(recipe: readonly string[]) {
 
     const textures = new Map<string, Texture>(loadedIngredients)
 
-    const items = recipe.map(() => {
+    const items = recipe.map((_, index) => {
         const icon = new Sprite()
 
         icon.anchor.set(0.5)
 
-        const arrow = new Text({
-            text: RECIPE_LAYOUT.arrow.text,
-            style: {
-                fontFamily: RECIPE_LAYOUT.fontFamily,
-                fontSize: RECIPE_LAYOUT.arrow.fontSize,
-                fill: RECIPE_LAYOUT.textColor
-            }
-        })
+        const arrow =
+            index < recipe.length - 1
+                ? new Text({
+                      text: RECIPE_LAYOUT.arrow.text,
+                      style: {
+                          fontFamily: RECIPE_LAYOUT.fontFamily,
+                          fontSize: RECIPE_LAYOUT.arrow.fontSize,
+                          fill: RECIPE_LAYOUT.textColor
+                      }
+                  })
+                : undefined
 
-        arrow.anchor.set(0.5)
+        arrow?.anchor.set(0.5)
 
         const visual = new Container()
         visual.addChild(icon)
@@ -86,7 +90,7 @@ export async function createRecipePanel(recipe: readonly string[]) {
 
         visual.position.set(x, RECIPE_LAYOUT.rowY)
 
-        if (index < items.length - 1) {
+        if (arrow) {
             arrow.position.set(x + RECIPE_LAYOUT.iconStep / 2, RECIPE_LAYOUT.rowY)
             view.addChild(arrow)
         }

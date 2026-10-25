@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../shared/prefersReducedMotion'
 import { BlurFilter, Container, Graphics } from 'pixi.js'
 import { gsap } from 'gsap'
 import { RECIPE_FOCUS as FX } from './constants/effects.constants'
@@ -7,7 +8,7 @@ export function createRecipeFocus() {
     view.eventMode = 'none'
     view.visible = false
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const halo = new Graphics().circle(0, 0, FX.haloRadius).fill(FX.haloColor)
     halo.alpha = FX.haloAlpha
     halo.blendMode = 'add'

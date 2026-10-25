@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../../shared/prefersReducedMotion'
 import { Container, Sprite } from 'pixi.js'
 import { FIRE_FX as FX } from './constants/fire.constants'
 import { createFireTexture } from './createFireTexture'
@@ -6,7 +7,7 @@ export function createCauldronFire(cauldron: Container) {
     const body = cauldron.getChildAt(0)
     const width = body.width
     const height = body.height
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     let elapsed = 0
     const flameTexture = createFireTexture(true)
     const glowTexture = createFireTexture(false)

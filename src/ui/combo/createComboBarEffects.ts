@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../shared/prefersReducedMotion'
 import { Container, Graphics } from 'pixi.js'
 import type { Sprite, Text } from 'pixi.js'
 import { gsap } from 'gsap'
@@ -6,7 +7,7 @@ import { COMBO_FX as FX } from './constants/effects.constants'
 import { COMBO_LAYOUT as L } from './constants/layout.constants'
 
 export function createComboBarEffects(parent: Container, fill: Container, title: Text, flame: Sprite) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const painter = createComboFill(fill)
     const particles = new Container()
     particles.eventMode = 'none'

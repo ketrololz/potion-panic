@@ -17,19 +17,9 @@ https://opengameart.org/content/magic-town
 License: CC0.
 
 User-supplied audio (licenses not specified here)
-button_click.mp3: new_audio/button_click.mp3
-recipe.wav: new_audio/recipe.wav
-woosh.wav: new_audio/woosh.wav
-water_drop.ogg: new_audio/water_drop.ogg (M4A is its AAC conversion)
-brewing.m4a: AAC conversion of new_audio/brewing_potion.flac
-fire.m4a: AAC conversion of new_audio/fire.wav
-result.m4a: AAC conversion of new_audio/result.flac
-
-swoosh.wav: user-supplied new_audio/swoosh.wav (ingredient shuffle). License not specified here.
-
-count.wav: user-supplied new_audio/count.wav. License not specified here.
-
-new_record.wav: user-supplied new_audio/new_record.wav. License not specified here.
-
-combo.wav: user-supplied new_audio/combo.wav. License not specified here.
-combo_flame.wav: user-supplied new_audio/combo_flame.wav. License not specified here.
+button_click.mp3, recipe.wav, woosh.wav, water_drop.ogg, swoosh.wav,
+count.wav, new_record.wav, combo.wav, combo_flame.wav.
+water_drop.m4a: AAC conversion of water_drop.ogg.
+brewing.m4a: AAC conversion of the supplied brewing_potion.flac.
+fire.m4a: AAC conversion of the supplied fire.wav.
+result.m4a: AAC conversion of the supplied result.flac.

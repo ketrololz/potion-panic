@@ -1,13 +1,14 @@
+import { prefersReducedMotion } from '../../../../shared/prefersReducedMotion'
 import { Container } from 'pixi.js'
 import { gsap } from 'gsap'
-import { INGREDIENTS } from '../constants/ingredinents.constants'
+import { INGREDIENTS } from '../constants/ingredients.constants'
 import { createIngredient } from '../ingredient/createIngredient'
-import { GROUP_LAYOT, GROUP_SHUFFLE } from './constants/group.constants'
+import { GROUP_LAYOUT, GROUP_SHUFFLE } from './constants/group.constants'
 import { shuffleOrder } from './shuffleOrder'
 
 export async function createIngredientGroup(onSelect: (id: string) => void) {
     const view = new Container()
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     let enabled = true
     let shuffling = false
     let movement: gsap.core.Timeline | undefined
@@ -16,7 +17,7 @@ export async function createIngredientGroup(onSelect: (id: string) => void) {
         INGREDIENTS.map((item) =>
             createIngredient({
                 ...item,
-                size: GROUP_LAYOT.itemSize,
+                size: GROUP_LAYOUT.itemSize,
                 onSelect(id) {
                     if (enabled && !shuffling) onSelect(id)
                 }
@@ -27,8 +28,8 @@ export async function createIngredientGroup(onSelect: (id: string) => void) {
 
     function positionFor(index: number) {
         return {
-            x: (index % GROUP_LAYOT.columns) * GROUP_LAYOT.columnStep,
-            y: Math.floor(index / GROUP_LAYOT.columns) * GROUP_LAYOT.rowStep
+            x: (index % GROUP_LAYOUT.columns) * GROUP_LAYOUT.columnStep,
+            y: Math.floor(index / GROUP_LAYOUT.columns) * GROUP_LAYOUT.rowStep
         }
     }
 
@@ -38,9 +39,9 @@ export async function createIngredientGroup(onSelect: (id: string) => void) {
         view.addChild(item)
     })
 
-    const columns = Math.min(GROUP_LAYOT.columns, ingredients.length)
-    const rows = Math.ceil(ingredients.length / GROUP_LAYOT.columns)
-    view.pivot.set(((columns - 1) * GROUP_LAYOT.columnStep) / 2, ((rows - 1) * GROUP_LAYOT.rowStep) / 2)
+    const columns = Math.min(GROUP_LAYOUT.columns, ingredients.length)
+    const rows = Math.ceil(ingredients.length / GROUP_LAYOUT.columns)
+    view.pivot.set(((columns - 1) * GROUP_LAYOUT.columnStep) / 2, ((rows - 1) * GROUP_LAYOUT.rowStep) / 2)
 
     function syncInteraction() {
         view.eventMode = enabled && !shuffling ? 'passive' : 'none'

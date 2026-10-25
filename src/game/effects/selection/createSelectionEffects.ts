@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../../shared/prefersReducedMotion'
 import { Container, Graphics, Point } from 'pixi.js'
 import type { PointData } from 'pixi.js'
 import { gsap } from 'gsap'
@@ -7,7 +8,7 @@ import { SELECTION_FX as FX } from './constants/selection.constants'
 export function createSelectionEffects(liquid: Container, onImpact: (recipeCompleted: boolean) => void) {
     const view = new Container()
     view.eventMode = 'none'
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const running = new Map<gsap.core.Timeline, Container>()
     let paused = false
 

@@ -25,6 +25,4 @@ export const INGREDIENTS = [
     }
 ] as const
 
-export const INGREDIENTS_NAME = INGREDIENTS.map(({ id }) => {
-    return id
-})
+export const INGREDIENT_IDS = INGREDIENTS.map(({ id }) => id)

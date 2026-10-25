@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../shared/prefersReducedMotion'
 import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js'
 import type { FederatedPointerEvent } from 'pixi.js'
 import { gsap } from 'gsap'
@@ -13,7 +14,7 @@ interface ButtonEffectsOptions {
 export function createButtonEffects({ view, content, background, sheenEnabled = true }: ButtonEffectsOptions) {
     const width = background.width
     const height = background.height
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     let hovered = false
     let pressed = false
     let enabled = true

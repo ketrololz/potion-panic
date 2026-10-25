@@ -82,13 +82,11 @@ export async function createResultPanel({ screenWidth, screenHeight, onRestart, 
         buttons: [restartButton, menuButton]
     })
 
-    function show({ score, bestScore, previousBestScore }: ResultData) {
+    function show(result: ResultData) {
         if (view.visible) return
 
-        scoreLabel.text = `Очки: ${score}`
-        bestScoreLabel.text = `Рекорд: ${bestScore}`
         view.visible = true
-        animation.play({ score, bestScore, previousBestScore })
+        animation.play(result)
     }
 
     function hide() {

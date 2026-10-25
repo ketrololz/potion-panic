@@ -1,9 +1,10 @@
+import { prefersReducedMotion } from '../../shared/prefersReducedMotion'
 import { Container, Graphics, Text } from 'pixi.js'
 import { gsap } from 'gsap'
 import { HUD_REWARD_FX as FX } from './constants/reward.constants'
 
 export function createHudRewardEffect(parent: Container, target: Text, color: number) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const baseScale = target.scale.clone()
     const view = new Container()
     view.eventMode = 'none'

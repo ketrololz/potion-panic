@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../../shared/prefersReducedMotion'
 import { Filter, GlProgram } from 'pixi.js'
 import type { Container } from 'pixi.js'
 import vertex from './shaders/liquid.vert?raw'
@@ -5,7 +6,7 @@ import fragment from './shaders/liquid.frag?raw'
 import { LIQUID_FX as FX } from './constants/liquidEffects.constants'
 
 export function createLiquidEffects(liquid: Container) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const uniforms = {
         uTime: { value: 0, type: 'f32' },
         uPadding: { value: FX.padding, type: 'f32' },

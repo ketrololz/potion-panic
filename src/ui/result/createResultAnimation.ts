@@ -1,4 +1,5 @@
-import { createRecordSparkles } from './createRecordSparkles'
+import { prefersReducedMotion } from '../../shared/prefersReducedMotion'
+import { createRecordCelebration } from './createRecordCelebration'
 import { createRoundFinale } from './createRoundFinale'
 import { Container, Graphics, Text } from 'pixi.js'
 import { gsap } from 'gsap'
@@ -32,7 +33,7 @@ export function createResultAnimation({
     onCountingChange,
     onNewRecord
 }: ResultAnimationOptions) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const finale = createRoundFinale(view, screenWidth, screenHeight)
     const intro = new Container()
     intro.eventMode = 'none'
@@ -77,19 +78,16 @@ export function createResultAnimation({
         intro.addChild(spark)
         return spark
     })
-    const recordSparkles = createRecordSparkles(view, screenWidth, screenHeight)
+    const record = createRecordCelebration({ view, screenWidth, screenHeight, resultTitle, scoreLabel, bestScoreLabel, finale, onNewRecord })
     let timeline: gsap.core.Timeline | undefined
-    let celebration: gsap.core.Timeline | undefined
 
     function clear() {
         onCountingChange(false)
-        celebration?.kill()
-        celebration = undefined
+        record.clear()
         timeline?.kill()
         timeline = undefined
         content.interactiveChildren = false
         finale.reset()
-        recordSparkles.reset()
     }
 
     function play({ score, bestScore, previousBestScore }: ResultData) {
@@ -139,19 +137,7 @@ export function createResultAnimation({
                         onCountingChange(false)
                         bestScoreLabel.text = `Рекорд: ${bestScore}`
                         scoreLabel.text = `Очки: ${score}`
-                        if (!isNewRecord) return
-                        resultTitle.text = 'НОВЫЙ РЕКОРД!'
-                        bestScoreLabel.style.fill = FX.goldColor
-                        onNewRecord()
-                        if (reducedMotion) return
-                        celebration = gsap.timeline()
-                        finale.play(celebration)
-                        recordSparkles.play(celebration)
-                        celebration
-                            .to(resultTitle.scale, { x: FX.recordTitleScale, y: FX.recordTitleScale, duration: 0.2, ease: 'power2.out' }, 0)
-                            .to(resultTitle.scale, { x: 1, y: 1, duration: 0.6, ease: 'back.out(2)' }, 0.2)
-                            .to(scoreLabel.scale, { x: 1.18, y: 1.18, duration: 0.2 }, 0)
-                            .to(scoreLabel.scale, { x: 1, y: 1, duration: 0.6, ease: 'back.out(2)' }, 0.2)
+                        if (isNewRecord) record.play()
                     }
                 },
                 panelAt + 0.15

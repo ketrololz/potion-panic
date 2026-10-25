@@ -1,3 +1,4 @@
+import { prefersReducedMotion } from '../../shared/prefersReducedMotion'
 import { Container, Graphics } from 'pixi.js'
 import type { Sprite, Text } from 'pixi.js'
 import { gsap } from 'gsap'
@@ -5,7 +6,7 @@ import { COMBO_FX as FX } from './constants/effects.constants'
 import { COMBO_LAYOUT as LAYOUT } from './constants/layout.constants'
 
 export function createComboEffects(parent: Container, title: Text, flame: Sprite) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const titleScale = title.scale.clone()
     const flameScale = flame.scale.clone()
     const view = new Container()

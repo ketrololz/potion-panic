@@ -132,6 +132,7 @@ export function createAudio() {
         play,
         playImpact,
         setCounting(value: boolean) {
+            if (destroyed || counting === value) return
             counting = value
             if (!value) {
                 sounds.get('count')?.stop()

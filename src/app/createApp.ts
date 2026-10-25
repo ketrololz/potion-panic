@@ -68,8 +68,8 @@ export async function createApp(root: HTMLElement) {
             app.renderer.off('resize', resize)
 
             unbindAudioControls()
-            audio.destroy()
             sceneManager.destroy()
+            audio.destroy()
 
             app.destroy(true, { children: true })
         }

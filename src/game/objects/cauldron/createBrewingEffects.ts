@@ -1,8 +1,9 @@
+import { prefersReducedMotion } from '../../../shared/prefersReducedMotion'
 import { Container, Graphics } from 'pixi.js'
 import { BREWING_FX as FX } from './constants/brewing.constants'
 
 export function createBrewingEffects(cauldron: Container, liquid: Container) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const width = liquid.width
     const height = liquid.height
     const view = new Container()

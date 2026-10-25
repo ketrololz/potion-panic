@@ -1,3 +1,4 @@
+import type { SessionStatus } from '../gameplay/session/types/session.types'
 import { createLiquidEffects } from '../objects/cauldron/createLiquidEffects'
 import { createCauldronFire } from '../objects/cauldron/createCauldronFire'
 import { Assets, Container, Graphics, Sprite } from 'pixi.js'
@@ -16,7 +17,7 @@ import { SESSION_RULES } from '../gameplay/session/constants/session.constants'
 import type { GameSceneOptions, Scene } from './types/gameScene.types'
 import { createPauseButton } from '../../ui/pause/createPauseButton'
 import { createResultPanel } from '../../ui/result/createResultPanel'
-import { INGREDIENTS_NAME } from '../objects/ingredients/constants/ingredinents.constants'
+import { INGREDIENT_IDS } from '../objects/ingredients/constants/ingredients.constants'
 import { createPausePanel } from '../../ui/pause/createPausePanel'
 import type { ResultData } from '../../ui/result/types/result.types'
 
@@ -39,8 +40,9 @@ export async function createGameScene({ onExit, recordScore, getBestScore, audio
     const cauldron = await createCauldron()
     scene.addChild(cauldron)
 
-    const session = createGameSession(INGREDIENTS_NAME)
+    const session = createGameSession(INGREDIENT_IDS)
     let finalResult: ResultData | undefined
+    let currentStatus: SessionStatus | undefined
 
     const recipePanel = await createRecipePanel(session.getState().recipe)
     scene.addChild(recipePanel.view)
@@ -161,6 +163,7 @@ export async function createGameScene({ onExit, recordScore, getBestScore, audio
 
     function restartGame() {
         finalResult = undefined
+        currentStatus = undefined
         previousBestScore = getBestScore()
 
         hud.clearEffects()
@@ -178,6 +181,8 @@ export async function createGameScene({ onExit, recordScore, getBestScore, audio
 
     function syncStatus() {
         const state = session.getState()
+        if (currentStatus === state.status) return
+        currentStatus = state.status
 
         hud.setPaused(state.status === 'paused')
         comboPanel.setPaused(state.status === 'paused')

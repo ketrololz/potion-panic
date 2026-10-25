@@ -1,10 +1,11 @@
+import { prefersReducedMotion } from '../../../shared/prefersReducedMotion'
 import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js'
 import { LOGO_FX as FX } from './constants/logoEffects.constants'
 
 export function createLogoEffects(logo: Sprite) {
     const parent = logo.parent
     if (!parent) throw new Error('Логотип должен быть добавлен в сцену перед созданием эффектов')
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
     const basePosition = logo.position.clone()
     const baseScale = logo.scale.clone()
     const width = logo.width

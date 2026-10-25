@@ -27,9 +27,7 @@ export function createRecipeProgress(recipe: readonly string[]) {
 
     function getProgress() {
         return {
-            currentStep,
-            totalSteps: ingredients.length,
-            isCompleted: currentStep === ingredients.length
+            currentStep
         }
     }
 
