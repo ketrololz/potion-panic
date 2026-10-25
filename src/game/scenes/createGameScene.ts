@@ -158,6 +158,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
         finalResult = undefined
 
         hud.clearEffects()
+        comboPanel.clearEffects()
         session.restart()
         liquidEffects.reset()
         brewing.reset()
@@ -173,6 +174,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
         const state = session.getState()
 
         hud.setPaused(state.status === 'paused')
+        comboPanel.setPaused(state.status === 'paused')
         audio.setPaused(state.status !== 'playing')
         ingredients.setEnabled(state.status === 'playing')
         selectionEffects.setPaused(state.status !== 'playing')

@@ -13,6 +13,5 @@ export const COMBO_LAYOUT = {
     flameX: -270,
     flameY: -30,
     titleY: -60,
-    titleX: -100,
-    fillHeightScale: 0.75
+    titleX: -100
 }

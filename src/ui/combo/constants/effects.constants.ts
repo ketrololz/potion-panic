@@ -1,0 +1,23 @@
+export const COMBO_FX = {
+    pulseScale: 1.22,
+    maxPulseScale: 1.35,
+    pulseDuration: 0.16,
+    settleDuration: 0.45,
+    glowAlpha: 0.95,
+    glowDuration: 0.65,
+    sparkCount: 16,
+    sparkColor: 0xffd166,
+    sparkRadius: 2.5,
+    sparkRise: 85,
+    sparkDuration: 0.7,
+    sheenDuration: 2.4,
+    sheenAlpha: 0.32,
+    sheenWidth: 100,
+    growDuration: 0.5,
+    burnDuration: 1.0,
+    burnHeat: 0.45,
+    burnSparkDuration: 0.6,
+    burnSparkDistance: 95,
+    burnColor: 0xff4930,
+    burnSparkCount: 64
+} as const

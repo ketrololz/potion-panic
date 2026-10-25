@@ -1,4 +1,6 @@
-import { Assets, Container, Rectangle, Sprite, Text, Texture } from 'pixi.js'
+import { Assets, Container, Sprite, Text } from 'pixi.js'
+import { createComboBarEffects } from './createComboBarEffects'
+import { createComboEffects } from './createComboEffects'
 import { COMBO_LAYOUT, COMBO_STYLE } from './constants/layout.constants'
 
 export async function createComboPanel(initialCombo: number, maxCombo: number) {
@@ -10,31 +12,15 @@ export async function createComboPanel(initialCombo: number, maxCombo: number) {
 
     view.eventMode = 'none'
 
-    const [trackTexture, fillTexture, flameTexture] = await Promise.all([
-        Assets.load('/assets/ui/combo/combo-frame.webp'),
-        Assets.load('/assets/ui/combo/combo-section.webp'),
-        Assets.load('/assets/ui/combo/combo-icon.webp')
-    ])
+    const [trackTexture, flameTexture] = await Promise.all([Assets.load('/assets/ui/combo/combo-frame.webp'), Assets.load('/assets/ui/combo/combo-icon.webp')])
 
     const track = new Sprite(trackTexture)
     track.anchor.set(0.5)
     track.width = COMBO_LAYOUT.trackWidth
     track.height = COMBO_LAYOUT.trackHeight
 
-    const fillScale = COMBO_LAYOUT.fillWidth / fillTexture.width
-    const fillScaleY = fillScale * COMBO_LAYOUT.fillHeightScale
-    const cropHeight = Math.min(fillTexture.height, COMBO_LAYOUT.fillHeight / fillScaleY)
-    const croppedTexture = new Texture({
-        source: fillTexture.source,
-        frame: new Rectangle(fillTexture.frame.x, fillTexture.frame.y + (fillTexture.height - cropHeight) / 2, fillTexture.width, cropHeight),
-        dynamic: true
-    })
-
-    const fill = new Sprite(croppedTexture)
-    fill.anchor.set(0, 0.5)
+    const fill = new Container()
     fill.position.x = -COMBO_LAYOUT.fillWidth / 2
-    fill.scale.set(fillScale, fillScaleY)
-    fill.on('destroyed', () => croppedTexture.destroy(false))
 
     const flame = new Sprite(flameTexture)
     flame.anchor.set(0.5)
@@ -51,30 +37,41 @@ export async function createComboPanel(initialCombo: number, maxCombo: number) {
 
     view.addChild(track, fill, flame, title)
 
+    const effects = createComboEffects(view, title, flame)
+
+    const barEffects = createComboBarEffects(view, fill, title, flame)
     let currentCombo: number | undefined
 
     function setCombo(combo: number) {
         if (currentCombo === combo) return
+        const increased = currentCombo !== undefined && combo > currentCombo
+        const lost = currentCombo !== undefined && currentCombo > 0 && combo === 0
+        effects.clear()
         currentCombo = combo
-
-        const progress = Math.max(0, Math.min(combo / maxCombo, 1))
-
+        if (lost) {
+            barEffects.burn()
+            return
+        }
         title.text = `КОМБО ×${combo}`
         title.visible = combo > 0
         flame.visible = combo > 0
-        fill.visible = progress > 0
-
-        if (progress > 0) {
-            croppedTexture.frame.width = fillTexture.width * progress
-            croppedTexture.orig.width = croppedTexture.frame.width
-            croppedTexture.update()
-        }
+        barEffects.setProgress(Math.max(0, Math.min(combo / maxCombo, 1)), increased)
+        if (increased) effects.play(combo >= maxCombo)
     }
 
     setCombo(initialCombo)
 
     return {
         view,
-        setCombo
+        setCombo,
+        setPaused(value: boolean) {
+            effects.setPaused(value)
+            barEffects.setPaused(value)
+        },
+        clearEffects() {
+            effects.clear()
+            barEffects.setProgress(0)
+            currentCombo = undefined
+        }
     }
 }
