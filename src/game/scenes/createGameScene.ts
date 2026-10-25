@@ -20,7 +20,8 @@ import { INGREDIENTS_NAME } from '../objects/ingredients/constants/ingredinents.
 import { createPausePanel } from '../../ui/pause/createPausePanel'
 import type { ResultData } from '../../ui/result/types/result.types'
 
-export async function createGameScene({ onExit, recordScore, audio }: GameSceneOptions): Promise<Scene> {
+export async function createGameScene({ onExit, recordScore, getBestScore, audio }: GameSceneOptions): Promise<Scene> {
+    let previousBestScore = getBestScore()
     audio.setMusic('game')
     const viewport = new Container()
     const scene = new Container()
@@ -62,6 +63,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
             const source = ingredients.getIngredientPosition(id, selectionEffects.view)
             if (outcome === 'wrong') {
                 audio.play('error')
+                if (previousState.combo > 0 && state.combo === 0) audio.play('comboBurn')
                 selectionEffects.error(source)
                 screenShake.play()
                 hud.showTimePenalty(SESSION_RULES.mistakeTimePenaltyMs)
@@ -72,6 +74,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
         }
 
         if (outcome === 'completed') {
+            if (state.combo > previousState.combo) audio.play('combo')
             if (ingredients.shuffle()) audio.play('shuffle')
             hud.showReward(state.score - previousState.score, state.remainingMs - previousState.remainingMs)
         }
@@ -98,6 +101,8 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
         screenWidth: GAME_WIDTH,
         screenHeight: GAME_HEIGHT,
         onRestart: restartGame,
+        onCountingChange: audio.setCounting,
+        onNewRecord: () => audio.play('record'),
         onExit
     })
 
@@ -156,6 +161,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
 
     function restartGame() {
         finalResult = undefined
+        previousBestScore = getBestScore()
 
         hud.clearEffects()
         comboPanel.clearEffects()
@@ -190,7 +196,8 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
                 selectionEffects.clear()
                 finalResult = {
                     score: state.score,
-                    bestScore: recordScore(state.score)
+                    bestScore: recordScore(state.score),
+                    previousBestScore
                 }
             }
 

@@ -26,3 +26,10 @@ fire.m4a: AAC conversion of new_audio/fire.wav
 result.m4a: AAC conversion of new_audio/result.flac
 
 swoosh.wav: user-supplied new_audio/swoosh.wav (ingredient shuffle). License not specified here.
+
+count.wav: user-supplied new_audio/count.wav. License not specified here.
+
+new_record.wav: user-supplied new_audio/new_record.wav. License not specified here.
+
+combo.wav: user-supplied new_audio/combo.wav. License not specified here.
+combo_flame.wav: user-supplied new_audio/combo_flame.wav. License not specified here.

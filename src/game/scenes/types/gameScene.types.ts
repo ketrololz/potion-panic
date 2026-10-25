@@ -10,5 +10,6 @@ export interface Scene {
 export interface GameSceneOptions {
     audio: GameAudio
     onExit: () => void
+    getBestScore: () => number
     recordScore: (score: number) => number
 }

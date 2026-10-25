@@ -15,6 +15,7 @@ export function createAudio() {
     let activated = false
     let destroyed = false
     let gamePaused = false
+    let counting = false
     let hovered = false
     let hoverTimer: ReturnType<typeof setTimeout> | undefined
     let desiredMusic: MusicId = 'menu'
@@ -72,6 +73,7 @@ export function createAudio() {
             syncLoop(id, allowed() && !musicMuted && desiredMusic === id, AUDIO_VOLUMES[id] * (gamePaused ? SETTINGS.pausedMusicMultiplier : 1))
         }
         syncLoop('fire', gameEffectsAllowed(), AUDIO_VOLUMES.fire)
+        syncLoop('count', counting && allowed() && !effectsMuted && desiredMusic === 'game', AUDIO_VOLUMES.count)
     }
 
     function resetHover() {
@@ -129,6 +131,14 @@ export function createAudio() {
     return {
         play,
         playImpact,
+        setCounting(value: boolean) {
+            counting = value
+            if (!value) {
+                sounds.get('count')?.stop()
+                voices.delete('count')
+            }
+            syncLoops()
+        },
         setHovered(value: boolean) {
             if (hovered === value) return
             hovered = value
@@ -149,6 +159,7 @@ export function createAudio() {
         setMusic(id: MusicId) {
             resetHover()
             if (desiredMusic !== id) {
+                counting = false
                 stopEffects()
                 for (const loop of AUDIO_LOOP_IDS) {
                     sounds.get(loop)?.stop()

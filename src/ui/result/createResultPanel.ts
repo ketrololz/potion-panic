@@ -4,7 +4,7 @@ import type { ResultData, ResultPanelOptions } from './types/result.types'
 import { RESULT_LAYOUT as LAYOUT } from './constants/layout.constants'
 import { createImageButton } from '../button/createImageButton'
 
-export async function createResultPanel({ screenWidth, screenHeight, onRestart, onExit }: ResultPanelOptions) {
+export async function createResultPanel({ screenWidth, screenHeight, onRestart, onExit, onCountingChange, onNewRecord }: ResultPanelOptions) {
     const view = new Container()
 
     view.visible = false
@@ -68,15 +68,27 @@ export async function createResultPanel({ screenWidth, screenHeight, onRestart, 
     const content = new Container()
     content.addChild(panel, title, scoreLabel, bestScoreLabel, restartButton, menuButton)
     view.addChild(backdrop, content)
-    const animation = createResultAnimation({ view, backdrop, content, scoreLabel, buttons: [restartButton, menuButton] })
+    const animation = createResultAnimation({
+        screenWidth,
+        screenHeight,
+        view,
+        backdrop,
+        content,
+        scoreLabel,
+        resultTitle: title,
+        bestScoreLabel,
+        onCountingChange,
+        onNewRecord,
+        buttons: [restartButton, menuButton]
+    })
 
-    function show({ score, bestScore }: ResultData) {
+    function show({ score, bestScore, previousBestScore }: ResultData) {
         if (view.visible) return
 
         scoreLabel.text = `Очки: ${score}`
         bestScoreLabel.text = `Рекорд: ${bestScore}`
         view.visible = true
-        animation.play({ score, bestScore })
+        animation.play({ score, bestScore, previousBestScore })
     }
 
     function hide() {

@@ -1,8 +1,8 @@
 export const RESULT_FX = {
     introDuration: 0.8,
-    panelAt: 1.05,
-    panelDuration: 0.55,
-    countDuration: 0.85,
+    panelAt: 1.4,
+    panelDuration: 0.65,
+    countDuration: 0.9,
     buttonStagger: 0.12,
     panelOffset: 45,
     introFontSize: 68,
@@ -11,6 +11,18 @@ export const RESULT_FX = {
     goldColor: 0xffd166,
     magicColor: 0x83ffe1,
     sealRadius: 220,
-    sparkCount: 18,
-    sparkDistance: 400
+    sparkCount: 36,
+    sparkDistance: 480,
+    burstAt: 0.12,
+    burstDuration: 1.5,
+    burstRadius: 340,
+    burstSparks: 64,
+    burstRays: 16,
+    flashAlpha: 0.12,
+    titleScale: 1.16,
+    recordSparkCount: 110,
+    recordSparkDuration: 1.6,
+    recordSparkStagger: 1.0,
+    recordFlashAlpha: 0.18,
+    recordTitleScale: 1.22
 } as const

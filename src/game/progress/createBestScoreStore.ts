@@ -39,5 +39,5 @@ export function createBestScoreStore() {
         return bestScore
     }
 
-    return { recordScore }
+    return { recordScore, getBestScore: () => bestScore }
 }

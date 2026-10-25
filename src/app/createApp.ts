@@ -44,7 +44,9 @@ export async function createApp(root: HTMLElement) {
     const bestScoreStore = createBestScoreStore()
 
     function showGame() {
-        sceneManager.show(() => createGameScene({ onExit: showMenu, recordScore: bestScoreStore.recordScore, audio })).catch(console.error)
+        sceneManager
+            .show(() => createGameScene({ onExit: showMenu, recordScore: bestScoreStore.recordScore, getBestScore: bestScoreStore.getBestScore, audio }))
+            .catch(console.error)
     }
 
     function showMenu() {
