@@ -1,3 +1,4 @@
+import { createLiquidEffects } from '../objects/cauldron/createLiquidEffects'
 import { createCauldronFire } from '../objects/cauldron/createCauldronFire'
 import { Assets, Container, Graphics, Sprite } from 'pixi.js'
 import { createScreenShake } from '../effects/shake/createScreenShake'
@@ -47,7 +48,11 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
 
     const liquid = cauldron.getChildByLabel('liquid')
     if (!liquid) throw new Error('Не найден слой жидкости котла')
-    const selectionEffects = createSelectionEffects(liquid, audio.playImpact)
+    const liquidEffects = createLiquidEffects(liquid)
+    const selectionEffects = createSelectionEffects(liquid, (recipeCompleted) => {
+        audio.playImpact(recipeCompleted)
+        liquidEffects.impact()
+    })
 
     const ingredients = await createIngredientGroup((id) => {
         const previousState = session.getState()
@@ -128,6 +133,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
 
     function update(deltaMs: number) {
         if (session.getState().status === 'playing') {
+            liquidEffects.update(deltaMs)
             brewing.update(deltaMs)
             fire.update(deltaMs)
         }
@@ -153,6 +159,7 @@ export async function createGameScene({ onExit, recordScore, audio }: GameSceneO
 
         hud.clearEffects()
         session.restart()
+        liquidEffects.reset()
         brewing.reset()
         fire.reset()
         ingredients.reset()

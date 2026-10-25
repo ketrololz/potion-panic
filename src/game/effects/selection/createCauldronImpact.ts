@@ -32,10 +32,10 @@ export function createCauldronImpact(
 
     for (let index = 0; index < FX.impactWaves; index++) {
         const wave = new Graphics()
-            .ellipse(0, 0, width * 0.38, width * 0.085)
-            .stroke({ color: FX.magicColor, width: 12, alpha: 0.08 })
-            .ellipse(0, 0, width * 0.38, width * 0.085)
-            .stroke({ color: index === 0 ? FX.coreColor : FX.magicColor, width: 2.5, alpha: 0.85 })
+            .ellipse(0, 0, width * FX.impactWaveRadiusX, width * FX.impactWaveRadiusY)
+            .stroke({ color: FX.magicColor, width: 8, alpha: 0.04 })
+            .ellipse(0, 0, width * FX.impactWaveRadiusX, width * FX.impactWaveRadiusY)
+            .stroke({ color: index === 0 ? FX.coreColor : FX.magicColor, width: FX.impactWaveStroke, alpha: FX.impactWaveAlpha })
         wave.alpha = 0
         wave.blendMode = 'add'
         impact.addChild(wave)
